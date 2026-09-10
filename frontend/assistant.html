@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Campus Assistant</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#f5f7fb;
+    min-height:100vh;
+}
+
+.header{
+    background:#1e3a8a;
+    color:white;
+    padding:18px 30px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.logo{
+    font-size:23px;
+    font-weight:bold;
+}
+
+.home-btn{
+    background:white;
+    color:#1e3a8a;
+    border:none;
+    padding:9px 16px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.container{
+    max-width:900px;
+    margin:30px auto;
+    padding:20px;
+}
+
+.title{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+.title h1{
+    color:#1e3a8a;
+    margin-bottom:8px;
+}
+
+.title p{
+    color:#6b7280;
+}
+
+.chat-box{
+    background:white;
+    border-radius:15px;
+    box-shadow:0 4px 15px rgba(0,0,0,.08);
+    padding:20px;
+}
+
+.messages{
+    height:450px;
+    overflow-y:auto;
+    padding:10px;
+    background:#f8fafc;
+    border-radius:10px;
+    margin-bottom:15px;
+}
+
+.message{
+    max-width:80%;
+    padding:12px 15px;
+    margin-bottom:12px;
+    border-radius:12px;
+    line-height:1.5;
+    white-space:pre-line;
+}
+
+.bot{
+    background:#e8efff;
+    color:#1e293b;
+    margin-right:auto;
+}
+
+.user-message{
+    background:#1e3a8a;
+    color:white;
+    margin-left:auto;
+}
+
+.sender{
+    font-size:12px;
+    font-weight:bold;
+    margin-bottom:5px;
+}
+
+.actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:12px;
+    margin-bottom:12px;
+}
+
+.action-btn{
+    border:1px solid #cbd5e1;
+    background:white;
+    color:#1e3a8a;
+    padding:9px 13px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:13px;
+    font-weight:bold;
+}
+
+.action-btn:hover{
+    background:#eef4ff;
+}
+
+.input-area{
+    display:flex;
+    gap:10px;
+}
+
+#messageInput{
+    flex:1;
+    padding:14px;
+    border:1px solid #d1d5db;
+    border-radius:10px;
+    font-size:16px;
+    outline:none;
+}
+
+#messageInput:focus{
+    border-color:#1e3a8a;
+}
+
+.send-btn{
+    padding:14px 22px;
+    border:none;
+    border-radius:10px;
+    background:#1e3a8a;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.send-btn:hover{
+    background:#172f73;
+}
+
+.send-btn:disabled{
+    background:#94a3b8;
+    cursor:not-allowed;
+}
+
+.suggestions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:15px;
+}
+
+.suggestion{
+    border:1px solid #cbd5e1;
+    background:white;
+    color:#334155;
+    padding:8px 12px;
+    border-radius:20px;
+    cursor:pointer;
+    font-size:13px;
+}
+
+.suggestion:hover{
+    background:#eef4ff;
+}
+
+.status{
+    text-align:center;
+    color:#64748b;
+    font-size:13px;
+    margin-top:12px;
+    min-height:20px;
+}
+
+@media(max-width:600px){
+    .header{
+        padding:15px 20px;
+    }
+
+    .logo{
+        font-size:18px;
+    }
+
+    .container{
+        padding:10px;
+    }
+
+    .messages{
+        height:400px;
+    }
+
+    .input-area{
+        flex-direction:column;
+    }
+
+    .send-btn{
+        width:100%;
+    }
+
+    .message{
+        max-width:90%;
+    }
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+    <div class="logo">🤖 Smart Campus AI</div>
+    <button class="home-btn" id="homeBtn">🏠 Home</button>
+</div>
+
+<div class="container">
+
+```
+<div class="title">
+    <h1>🤖 AI Campus Assistant</h1>
+    <p>Ask anything about campus services</p>
+</div>
+
+<div class="chat-box">
+
+    <div class="messages" id="messages">
+        <div class="message bot">
+            <div class="sender">🤖 AI Assistant</div>
+            Hello! 👋<br><br>
+            I am your Smart Campus AI Assistant.
+            <br><br>
+            You can ask me about:
+            <br>
+            • My Complaints
+            <br>
+            • Complaint Status
+            <br>
+            • Notices
+            <br>
+            • Events
+            <br>
+            • Library
+            <br>
+            • Emergency SOS
+            <br>
+            • Lost & Found
+        </div>
+    </div>
+
+    <div class="input-area">
+        <input
+            type="text"
+            id="messageInput"
+            placeholder="Type your question..."
+            autocomplete="off"
+        >
+
+        <button
+            class="send-btn"
+            id="sendButton"
+        >
+            Send
+        </button>
+    </div>
+
+    <div class="suggestions">
+
+        <button class="suggestion" id="myComplaintsBtn">
+            📋 My Complaints
+        </button>
+
+        <button class="suggestion" id="complaintStatusBtn">
+            📊 Complaint Status
+        </button>
+
+        <button class="suggestion" id="noticesBtn">
+            📢 Notices
+        </button>
+
+        <button class="suggestion" id="eventsBtn">
+            📅 Events
+        </button>
+
+        <button class="suggestion" id="lostFoundBtn">
+            🔎 Lost & Found
+        </button>
+
+        <button class="suggestion" id="emergencyBtn">
+            🚨 Emergency
+        </button>
+
+        <button class="suggestion" id="libraryBtn">
+            📚 Library
+        </button>
+
+    </div>
+
+    <div class="status" id="status"></div>
+
+</div>
+```
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="config.js"></script>
+
+<script src="supabase.js"></script>
+
+<script>
+
+let currentUserId = null;
+
+async function loadCurrentUser(){
+
+    try{
+
+        if(
+            typeof supabaseClient === "undefined" ||
+            !supabaseClient
+        ){
+
+            throw new Error("Supabase client not found");
+
+        }
+
+        const { data, error } =
+            await supabaseClient.auth.getSession();
+
+        if(error){
+            throw error;
+        }
+
+        if(
+            !data ||
+            !data.session ||
+            !data.session.user
+        ){
+
+            document.getElementById("status").innerText =
+                "❌ Please login first";
+
+            return;
+
+        }
+
+        currentUserId =
+            data.session.user.id;
+
+        console.log(
+            "Logged-in User ID:",
+            currentUserId
+        );
+
+        document.getElementById("status").innerText =
+            "✅ Logged in";
+
+    }
+    catch(error){
+
+        console.error(
+            "SUPABASE ERROR:",
+            error
+        );
+
+        document.getElementById("status").innerText =
+            "❌ Login session error";
+
+    }
+
+}
+
+function goHome(){
+    window.location.href = "index.html";
+}
+
+function openComplaint(){
+    window.location.href = "index.html";
+}
+
+function openNotices(){
+    window.location.href = "notices.html";
+}
+
+function openEvents(){
+    window.location.href = "notices.html";
+}
+
+function openLostFound(){
+    window.location.href = "lost-found.html";
+}
+
+function openEmergency(){
+    window.location.href = "emergency.html";
+}
+
+function askSuggestion(text){
+
+    const input =
+        document.getElementById(
+            "messageInput"
+        );
+
+    input.value = text;
+
+    sendMessage();
+
+}
+
+function addUserMessage(text){
+
+    const messages =
+        document.getElementById(
+            "messages"
+        );
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+    div.className =
+        "message user-message";
+
+    div.innerHTML =
+        "<div class='sender'>👤 You</div>" +
+        escapeHTML(text);
+
+    messages.appendChild(div);
+
+    messages.scrollTop =
+        messages.scrollHeight;
+
+}
+
+function createActionButton(type){
+
+    const actionDiv =
+        document.createElement(
+            "div"
+        );
+
+    actionDiv.className =
+        "actions";
+
+    const button =
+        document.createElement(
+            "button"
+        );
+
+    button.className =
+        "action-btn";
+
+    if(type === "complaint"){
+
+        button.innerText =
+            "📝 Open Complaint Analyzer";
+
+        button.addEventListener(
+            "click",
+            openComplaint
+        );
+
+    }
+
+    else if(type === "notice"){
+
+        button.innerText =
+            "📢 Open Notices";
+
+        button.addEventListener(
+            "click",
+            openNotices
+        );
+
+    }
+
+    else if(type === "event"){
+
+        button.innerText =
+            "📅 Open Events";
+
+        button.addEventListener(
+            "click",
+            openEvents
+        );
+
+    }
+
+    else if(type === "lost"){
+
+        button.innerText =
+            "🔎 Open Lost & Found";
+
+        button.addEventListener(
+            "click",
+            openLostFound
+        );
+
+    }
+
+    else if(type === "emergency"){
+
+        button.innerText =
+            "🚨 Open Emergency SOS";
+
+        button.addEventListener(
+            "click",
+            openEmergency
+        );
+
+    }
+
+    actionDiv.appendChild(
+        button
+    );
+
+    return actionDiv;
+
+}
+
+function addBotMessage(
+    text,
+    actionType = null
+){
+
+    const messages =
+        document.getElementById(
+            "messages"
+        );
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+    div.className =
+        "message bot";
+
+    div.innerHTML =
+        "<div class='sender'>🤖 AI Assistant</div>" +
+        escapeHTML(text);
+
+    messages.appendChild(div);
+
+    if(actionType){
+
+        messages.appendChild(
+            createActionButton(
+                actionType
+            )
+        );
+
+    }
+
+    messages.scrollTop =
+        messages.scrollHeight;
+
+}
+
+function detectActionType(message){
+
+    const text =
+        message.toLowerCase();
+
+    if(
+        text.includes("notice") ||
+        text.includes("announcement")
+    ){
+        return "notice";
+    }
+
+    if(
+        text.includes("event") ||
+        text.includes("function") ||
+        text.includes("program")
+    ){
+        return "event";
+    }
+
+    if(
+        text.includes("lost") ||
+        text.includes("found") ||
+        text.includes("missing")
+    ){
+        return "lost";
+    }
+
+    if(
+        text.includes("emergency") ||
+        text.includes("sos") ||
+        text.includes("fire") ||
+        text.includes("accident") ||
+        text.includes("danger")
+    ){
+        return "emergency";
+    }
+
+    if(
+        text.includes("complaint") ||
+        text.includes("report") ||
+        text.includes("problem") ||
+        text.includes("issue") ||
+        text.includes("complaints")
+    ){
+        return "complaint";
+    }
+
+    return null;
+
+}
+
+async function sendMessage(){
+
+    const input =
+        document.getElementById(
+            "messageInput"
+        );
+
+    const button =
+        document.getElementById(
+            "sendButton"
+        );
+
+    const status =
+        document.getElementById(
+            "status"
+        );
+
+    const message =
+        input.value.trim();
+
+    if(!message){
+        return;
+    }
+
+    if(!currentUserId){
+
+        addBotMessage(
+            "❌ Please login first. Your login session is not available."
+        );
+
+        return;
+
+    }
+
+    addUserMessage(
+        message
+    );
+
+    input.value = "";
+
+    button.disabled = true;
+
+    button.innerText =
+        "Thinking...";
+
+    status.innerText =
+        "🤖 AI is preparing a response...";
+
+    try{
+
+        const response =
+            await fetch(
+                "http://localhost:5000/api/assistant",
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:JSON.stringify({
+                        message:
+                            message,
+
+                        user_id:
+                            currentUserId
+                    })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        console.log(
+            "ASSISTANT RESPONSE:",
+            data
+        );
+
+        if(!response.ok){
+
+            throw new Error(
+                data.message ||
+                data.reply ||
+                "Backend server error"
+            );
+
+        }
+
+        if(!data.success){
+
+            throw new Error(
+                data.message ||
+                data.reply ||
+                "Assistant response failed"
+            );
+
+        }
+
+        const botReply =
+            data.reply ||
+            data.answer ||
+            "No response received from AI Assistant.";
+
+        const actionType =
+            detectActionType(
+                message
+            );
+
+        addBotMessage(
+            botReply,
+            actionType
+        );
+
+        status.innerText =
+            "✅ Response received";
+
+    }
+    catch(error){
+
+        console.error(
+            "ASSISTANT ERROR:",
+            error
+        );
+
+        addBotMessage(
+            "❌ " + error.message
+        );
+
+        status.innerText =
+            "❌ Connection failed";
+
+    }
+    finally{
+
+        button.disabled = false;
+
+        button.innerText =
+            "Send";
+
+    }
+
+}
+
+function escapeHTML(text){
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+    div.textContent =
+        text ?? "";
+
+    return div.innerHTML;
+
+}
+
+document
+    .getElementById("homeBtn")
+    .addEventListener(
+        "click",
+        goHome
+    );
+
+document
+    .getElementById("sendButton")
+    .addEventListener(
+        "click",
+        sendMessage
+    );
+
+document
+    .getElementById("myComplaintsBtn")
+    .addEventListener(
+        "click",
+        function(){
+            askSuggestion(
+                "Show my complaints"
+            );
+        }
+    );
+
+document
+    .getElementById("complaintStatusBtn")
+    .addEventListener(
+        "click",
+        function(){
+            askSuggestion(
+                "What is the status of my complaint?"
+            );
+        }
+    );
+
+document
+    .getElementById("noticesBtn")
+    .addEventListener(
+        "click",
+        function(){
+            askSuggestion(
+                "Show notices"
+            );
+        }
+    );
+
+document
+    .getElementById("eventsBtn")
+    .addEventListener(
+        "click",
+        function(){
+            askSuggestion(
+                "Show events"
+            );
+        }
+    );
+
+document
+    .getElementById("lostFoundBtn")
+    .addEventListener(
+        "click",
+        function(){
+            askSuggestion(
+                "Show lost and found items"
+            );
+        }
+    );
+
+document
+    .getElementById("emergencyBtn")
+    .addEventListener(
+        "click",
+        function(){
+            askSuggestion(
+                "Emergency help"
+            );
+        }
+    );
+
+document
+    .getElementById("libraryBtn")
+    .addEventListener(
+        "click",
+        function(){
+            askSuggestion(
+                "Tell me about the library"
+            );
+        }
+    );
+
+document
+    .getElementById("messageInput")
+    .addEventListener(
+        "keydown",
+        function(event){
+
+            if(event.key === "Enter"){
+                sendMessage();
+            }
+
+        }
+    );
+
+loadCurrentUser();
+
+</script>
+
+</body>
+</html>

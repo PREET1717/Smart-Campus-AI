@@ -1,0 +1,1993 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+```
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Smart Campus AI</title>
+
+<!-- SUPABASE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="config.js"></script>
+<script src="supabase.js"></script>
+
+<style>
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+    }
+
+    body {
+        background: #f5f7fb;
+        color: #1f2937;
+    }
+
+    /* =====================================
+       HEADER
+    ===================================== */
+
+    .header {
+        background: #1e3a8a;
+        color: white;
+        padding: 18px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .logo {
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    .header-right {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .user {
+        background: white;
+        color: #1e3a8a;
+        padding: 9px 16px;
+        border-radius: 20px;
+        font-weight: bold;
+    }
+
+    /* =====================================
+       NOTIFICATION
+    ===================================== */
+
+    .notification-wrapper {
+        position: relative;
+    }
+
+    .notification-btn {
+        position: relative;
+        width: 42px;
+        height: 42px;
+        border: none;
+        border-radius: 50%;
+        background: white;
+        color: #1e3a8a;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    .notification-btn:hover {
+        background: #e8efff;
+    }
+
+    .notification-count {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        min-width: 20px;
+        height: 20px;
+        padding: 0 5px;
+        border-radius: 20px;
+        background: #dc2626;
+        color: white;
+        font-size: 11px;
+        font-weight: bold;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .notification-count.hidden {
+        display: none;
+    }
+
+    .notification-panel {
+        position: absolute;
+        top: 52px;
+        right: 0;
+        width: 340px;
+        background: white;
+        color: #1f2937;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+        z-index: 2000;
+        display: none;
+        overflow: hidden;
+    }
+
+    .notification-panel.show {
+        display: block;
+    }
+
+    .notification-header {
+        padding: 15px;
+        background: #f8fafc;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .notification-header h3 {
+        color: #1e3a8a;
+        font-size: 16px;
+    }
+
+    .read-btn {
+        border: none;
+        background: none;
+        color: #2563eb;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .notification-list {
+        max-height: 360px;
+        overflow-y: auto;
+    }
+
+    .notification-item {
+        padding: 14px 15px;
+        border-bottom: 1px solid #eef2f7;
+        cursor: pointer;
+    }
+
+    .notification-item:hover {
+        background: #f8fafc;
+    }
+
+    .notification-item.unread {
+        background: #eef4ff;
+    }
+
+    .notification-title {
+        font-weight: bold;
+        color: #1e293b;
+        margin-bottom: 5px;
+    }
+
+    .notification-message {
+        font-size: 13px;
+        color: #64748b;
+        line-height: 1.4;
+    }
+
+    .notification-date {
+        margin-top: 7px;
+        font-size: 11px;
+        color: #94a3b8;
+    }
+
+    .no-notifications {
+        padding: 25px;
+        text-align: center;
+        color: #64748b;
+    }
+
+    /* =====================================
+       LAYOUT
+    ===================================== */
+
+    .layout {
+        display: flex;
+        min-height: calc(100vh - 70px);
+    }
+
+    /* =====================================
+       SIDEBAR
+    ===================================== */
+
+    .sidebar {
+        width: 230px;
+        background: white;
+        padding: 25px 15px;
+        border-right: 1px solid #ddd;
+    }
+
+    .sidebar h3 {
+        margin-bottom: 20px;
+        color: #1e3a8a;
+    }
+
+    .menu {
+        padding: 13px 15px;
+        margin-bottom: 8px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .menu:hover,
+    .menu.active {
+        background: #e8efff;
+        color: #1e3a8a;
+        font-weight: bold;
+    }
+
+    /* =====================================
+       MAIN
+    ===================================== */
+
+    .main {
+        flex: 1;
+        padding: 35px;
+    }
+
+    .welcome h1 {
+        font-size: 30px;
+        margin-bottom: 8px;
+    }
+
+    .welcome p {
+        color: #6b7280;
+        margin-bottom: 30px;
+    }
+
+    /* =====================================
+       CARDS
+    ===================================== */
+
+    .cards {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .card {
+        background: white;
+        padding: 22px;
+        border-radius: 14px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+    }
+
+    .card h4 {
+        color: #6b7280;
+        margin-bottom: 10px;
+    }
+
+    .number {
+        font-size: 28px;
+        font-weight: bold;
+        color: #1e3a8a;
+    }
+
+    /* =====================================
+       COMPLAINT BOX
+    ===================================== */
+
+    .complaint-box {
+        background: white;
+        padding: 30px;
+        border-radius: 14px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+        max-width: 900px;
+    }
+
+    .complaint-box h2 {
+        color: #1e3a8a;
+        margin-bottom: 8px;
+    }
+
+    .complaint-box > p {
+        color: #6b7280;
+        margin-bottom: 20px;
+        line-height: 1.5;
+    }
+
+    textarea {
+        width: 100%;
+        height: 150px;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        padding: 15px;
+        font-size: 16px;
+        resize: vertical;
+        outline: none;
+    }
+
+    textarea:focus {
+        border-color: #1e3a8a;
+    }
+
+    .main-button {
+        margin-top: 15px;
+        width: 100%;
+        padding: 14px;
+        border: none;
+        border-radius: 9px;
+        background: #1e3a8a;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .main-button:hover {
+        background: #172f73;
+    }
+
+    .main-button:disabled {
+        background: #94a3b8;
+        cursor: not-allowed;
+    }
+
+    /* =====================================
+       RESULT
+    ===================================== */
+
+    #result {
+        margin-top: 20px;
+        padding: 20px;
+        background: #eef4ff;
+        border-radius: 10px;
+        display: none;
+        border: 1px solid #dbeafe;
+    }
+
+    .result-title {
+        color: #1e3a8a;
+        margin-bottom: 15px;
+    }
+
+    .result-item {
+        margin: 10px 0;
+        line-height: 1.5;
+    }
+
+    .action-box {
+        margin-top: 15px;
+        padding: 15px;
+        background: white;
+        border-radius: 10px;
+        border-left: 4px solid #1e3a8a;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .badge-high {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .badge-medium {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .badge-low {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .success {
+        color: green;
+        font-weight: bold;
+    }
+
+    .error {
+        color: red;
+        font-weight: bold;
+    }
+
+    .loading {
+        color: #1e3a8a;
+        font-weight: bold;
+    }
+
+    .hint {
+        margin-top: 12px;
+        color: #64748b;
+        font-size: 14px;
+    }
+
+    /* =====================================
+       SOS
+    ===================================== */
+
+    .sos-button {
+        position: fixed;
+        right: 25px;
+        bottom: 25px;
+        width: auto;
+        padding: 14px 20px;
+        background: #dc2626;
+        color: white;
+        border: none;
+        border-radius: 30px;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        z-index: 1000;
+    }
+
+    .sos-button:hover {
+        background: #b91c1c;
+    }
+
+    /* =====================================
+       RESPONSIVE
+    ===================================== */
+
+    @media (max-width: 900px) {
+
+        .cards {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .sidebar {
+            width: 180px;
+        }
+
+    }
+
+    @media (max-width: 600px) {
+
+        .header {
+            padding: 15px 20px;
+        }
+
+        .logo {
+            font-size: 19px;
+        }
+
+        .header-right {
+            gap: 8px;
+        }
+
+        .user {
+            font-size: 13px;
+            padding: 8px 12px;
+        }
+
+        .sidebar {
+            display: none;
+        }
+
+        .main {
+            padding: 20px;
+        }
+
+        .cards {
+            grid-template-columns: 1fr;
+        }
+
+        .complaint-box {
+            padding: 20px;
+        }
+
+        .notification-panel {
+            position: fixed;
+            top: 70px;
+            right: 10px;
+            left: 10px;
+            width: auto;
+        }
+
+    }
+
+</style>
+```
+
+</head>
+
+<body>
+
+```
+<!-- HEADER -->
+
+<div class="header">
+
+    <div class="logo">
+        🎓 Smart Campus AI
+    </div>
+
+
+    <div class="header-right">
+
+        <!-- NOTIFICATION -->
+
+        <div
+            class="notification-wrapper"
+            id="notificationWrapper"
+        >
+
+            <button
+                class="notification-btn"
+                onclick="toggleNotifications()"
+                title="Notifications"
+            >
+                🔔
+
+                <span
+                    id="notificationCount"
+                    class="notification-count hidden"
+                >
+                    0
+                </span>
+
+            </button>
+
+
+            <div
+                id="notificationPanel"
+                class="notification-panel"
+            >
+
+                <div class="notification-header">
+
+                    <h3>
+                        🔔 Notifications
+                    </h3>
+
+                    <button
+                        class="read-btn"
+                        onclick="markAllAsRead()"
+                    >
+                        Mark all read
+                    </button>
+
+                </div>
+
+
+                <div
+                    id="notificationList"
+                    class="notification-list"
+                >
+
+                    <div class="no-notifications">
+                        Loading notifications...
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- USER -->
+
+        <div
+            class="user"
+            id="userName"
+        >
+            Student
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- LAYOUT -->
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+
+    <div class="sidebar">
+
+        <h3>
+            Campus Menu
+        </h3>
+
+        <div
+            class="menu active"
+            onclick="goHome()"
+        >
+            🏠 Dashboard
+        </div>
+
+        <div
+            class="menu"
+            onclick="goComplaints()"
+        >
+            📝 Complaints
+        </div>
+
+        <div
+            class="menu"
+            onclick="goAssistant()"
+        >
+            🤖 AI Assistant
+        </div>
+
+        <div
+            class="menu"
+            onclick="goNotices()"
+        >
+            📢 Notices
+        </div>
+
+        <div
+            class="menu"
+            onclick="goEvents()"
+        >
+            📅 Events
+        </div>
+
+        <div
+            class="menu"
+            onclick="goLostFound()"
+        >
+            🔎 Lost & Found
+        </div>
+
+        <div
+            class="menu"
+            onclick="goEmergency()"
+        >
+            🚨 Emergency SOS
+        </div>
+
+    </div>
+
+
+    <!-- MAIN -->
+
+    <div class="main">
+
+        <!-- WELCOME -->
+
+        <div class="welcome">
+
+            <h1 id="welcomeTitle">
+                Welcome to Smart Campus 👋
+            </h1>
+
+            <p>
+                AI-powered campus management system
+            </p>
+
+        </div>
+
+
+        <!-- CARDS -->
+
+        <div class="cards">
+
+            <div class="card">
+
+                <h4>
+                    Total Complaints
+                </h4>
+
+                <div
+                    class="number"
+                    id="totalComplaints"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <h4>
+                    Pending
+                </h4>
+
+                <div
+                    class="number"
+                    id="pendingComplaints"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <h4>
+                    Resolved
+                </h4>
+
+                <div
+                    class="number"
+                    id="resolvedComplaints"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <h4>
+                    AI Analyzed
+                </h4>
+
+                <div
+                    class="number"
+                    id="aiAnalyzed"
+                >
+                    0
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- AI COMPLAINT ANALYZER -->
+
+        <div class="complaint-box">
+
+            <h2>
+                🤖 AI Complaint Analyzer
+            </h2>
+
+            <p>
+                Describe your campus problem.
+                AI will automatically identify
+                the category, priority, department
+                and suggested action.
+            </p>
+
+
+            <textarea
+                id="complaint"
+                placeholder="Example: College washroom mein paani nahi aa raha..."
+            ></textarea>
+
+
+            <button
+                id="analyzeButton"
+                class="main-button"
+                onclick="analyzeComplaint()"
+            >
+                🤖 Analyze Complaint
+            </button>
+
+
+            <div id="result"></div>
+
+
+            <div class="hint">
+                💡 Example:
+                "College laboratory ka AC kaam nahi kar raha."
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- SOS -->
+
+<button
+    class="sos-button"
+    onclick="goEmergency()"
+>
+    🚨 Emergency SOS
+</button>
+
+
+<script>
+
+    let currentUserId = null;
+
+
+    /* =====================================
+       NAVIGATION
+    ===================================== */
+
+    function goHome() {
+        window.location.href = "index.html";
+    }
+
+    function goComplaints() {
+        window.location.href = "complaints.html";
+    }
+
+    function goAssistant() {
+        window.location.href = "assistant.html";
+    }
+
+    function goNotices() {
+        window.location.href = "notices.html";
+    }
+
+    function goEvents() {
+        window.location.href = "notices.html";
+    }
+
+    function goLostFound() {
+        window.location.href = "lost-found.html";
+    }
+
+    function goEmergency() {
+        window.location.href = "emergency.html";
+    }
+
+
+    /* =====================================
+       LOAD DASHBOARD
+    ===================================== */
+
+    async function loadDashboard() {
+
+        try {
+
+            if (!window.supabaseClient) {
+
+                console.error(
+                    "Supabase client not found."
+                );
+
+                return;
+            }
+
+
+            const {
+                data: complaints,
+                error: complaintError
+            } =
+                await window.supabaseClient
+                    .from("complaints")
+                    .select(
+                        "status, category"
+                    );
+
+
+            if (complaintError) {
+
+                console.error(
+                    "Complaint Error:",
+                    complaintError
+                );
+
+                return;
+            }
+
+
+            const complaintList =
+                complaints || [];
+
+
+            const total =
+                complaintList.length;
+
+
+            const pending =
+                complaintList.filter(
+                    complaint =>
+                        String(
+                            complaint.status
+                        ).toUpperCase() ===
+                        "PENDING"
+                ).length;
+
+
+            const resolved =
+                complaintList.filter(
+                    complaint =>
+                        String(
+                            complaint.status
+                        ).toUpperCase() ===
+                        "RESOLVED"
+                ).length;
+
+
+            const aiAnalyzed =
+                complaintList.filter(
+                    complaint =>
+                        complaint.category &&
+                        String(
+                            complaint.category
+                        ).trim() !== ""
+                ).length;
+
+
+            document.getElementById(
+                "totalComplaints"
+            ).innerText =
+                total;
+
+
+            document.getElementById(
+                "pendingComplaints"
+            ).innerText =
+                pending;
+
+
+            document.getElementById(
+                "resolvedComplaints"
+            ).innerText =
+                resolved;
+
+
+            document.getElementById(
+                "aiAnalyzed"
+            ).innerText =
+                aiAnalyzed;
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Dashboard Error:",
+                error
+            );
+
+        }
+
+    }
+
+
+    /* =====================================
+       LOAD USER
+    ===================================== */
+
+    async function loadLoggedInUser() {
+
+        try {
+
+            if (!window.supabaseClient) {
+                return;
+            }
+
+
+            const {
+                data,
+                error
+            } =
+                await window.supabaseClient
+                    .auth
+                    .getUser();
+
+
+            if (
+                error ||
+                !data ||
+                !data.user
+            ) {
+
+                setStudentName(
+                    "Student"
+                );
+
+                return;
+
+            }
+
+
+            const user =
+                data.user;
+
+
+            currentUserId =
+                user.id;
+
+
+            let name =
+                user.user_metadata?.name ||
+                user.user_metadata?.full_name ||
+                "";
+
+
+            const {
+                data: profile,
+                error: profileError
+            } =
+                await window.supabaseClient
+                    .from("users")
+                    .select("name, role")
+                    .eq(
+                        "id",
+                        user.id
+                    )
+                    .maybeSingle();
+
+
+            if (
+                !profileError &&
+                profile?.name
+            ) {
+
+                const profileName =
+                    String(
+                        profile.name
+                    ).trim();
+
+
+                if (
+                    profileName &&
+                    profileName.toUpperCase() !==
+                    "NOTHING"
+                ) {
+
+                    name =
+                        profileName;
+
+                }
+
+            }
+
+
+            if (!name) {
+
+                name =
+                    user.email
+                        ? user.email.split("@")[0]
+                        : "Student";
+
+            }
+
+
+            if (
+                !name ||
+                name.toUpperCase() === "NOTHING"
+            ) {
+
+                name =
+                    "Student";
+
+            }
+
+
+            setStudentName(
+                name
+            );
+
+
+            await loadNotifications();
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "User Load Error:",
+                error
+            );
+
+            setStudentName(
+                "Student"
+            );
+
+        }
+
+    }
+
+
+    function setStudentName(
+        name
+    ) {
+
+        document.getElementById(
+            "userName"
+        ).innerText =
+            name;
+
+
+        document.getElementById(
+            "welcomeTitle"
+        ).innerText =
+            "Welcome, " +
+            name +
+            " 👋";
+
+    }
+
+
+    /* =====================================
+       NOTIFICATIONS
+    ===================================== */
+
+    async function loadNotifications() {
+
+        if (!currentUserId) {
+
+            return;
+
+        }
+
+
+        const list =
+            document.getElementById(
+                "notificationList"
+            );
+
+
+        list.innerHTML = `
+            <div class="no-notifications">
+                ⏳ Loading notifications...
+            </div>
+        `;
+
+
+        const {
+            data,
+            error
+        } =
+            await window.supabaseClient
+                .from("notifications")
+                .select("*")
+                .eq(
+                    "user_id",
+                    currentUserId
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending:
+                            false
+                    }
+                )
+                .limit(20);
+
+
+        if (error) {
+
+            console.error(
+                "Notification Error:",
+                error
+            );
+
+
+            list.innerHTML = `
+                <div class="no-notifications">
+                    ❌ Unable to load notifications.
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        const notifications =
+            data || [];
+
+
+        const unreadCount =
+            notifications.filter(
+                notification =>
+                    !notification.is_read
+            ).length;
+
+
+        updateNotificationCount(
+            unreadCount
+        );
+
+
+        if (
+            notifications.length === 0
+        ) {
+
+            list.innerHTML = `
+                <div class="no-notifications">
+                    🔔 No notifications yet.
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        let html = "";
+
+
+        notifications.forEach(
+            notification => {
+
+                html += `
+
+                    <div
+                        class="
+                            notification-item
+                            ${
+                                !notification.is_read
+                                    ? "unread"
+                                    : ""
+                            }
+                        "
+                        onclick="
+                            markNotificationAsRead(
+                                '${escapeAttribute(
+                                    notification.id
+                                )}'
+                            )
+                        "
+                    >
+
+                        <div class="notification-title">
+
+                            ${
+                                notification.type ===
+                                "COMPLAINT"
+                                    ? "📝 "
+                                    : notification.type ===
+                                      "EMERGENCY"
+                                        ? "🚨 "
+                                        : "🔔 "
+                            }
+
+                            ${escapeHTML(
+                                notification.title
+                            )}
+
+                        </div>
+
+
+                        <div class="notification-message">
+
+                            ${escapeHTML(
+                                notification.message
+                            )}
+
+                        </div>
+
+
+                        <div class="notification-date">
+
+                            ${formatDate(
+                                notification.created_at
+                            )}
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }
+        );
+
+
+        list.innerHTML =
+            html;
+
+    }
+
+
+    function updateNotificationCount(
+        count
+    ) {
+
+        const badge =
+            document.getElementById(
+                "notificationCount"
+            );
+
+
+        if (
+            count <= 0
+        ) {
+
+            badge.classList.add(
+                "hidden"
+            );
+
+            badge.innerText =
+                "0";
+
+            return;
+
+        }
+
+
+        badge.classList.remove(
+            "hidden"
+        );
+
+
+        badge.innerText =
+            count > 99
+                ? "99+"
+                : count;
+
+    }
+
+
+    function toggleNotifications() {
+
+        const panel =
+            document.getElementById(
+                "notificationPanel"
+            );
+
+
+        panel.classList.toggle(
+            "show"
+        );
+
+
+        if (
+            panel.classList.contains("show")
+        ) {
+
+            loadNotifications();
+
+        }
+
+    }
+
+
+    async function markNotificationAsRead(
+        id
+    ) {
+
+        if (!currentUserId) {
+            return;
+        }
+
+
+        const {
+            error
+        } =
+            await window.supabaseClient
+                .from("notifications")
+                .update({
+                    is_read: true
+                })
+                .eq(
+                    "id",
+                    id
+                )
+                .eq(
+                    "user_id",
+                    currentUserId
+                );
+
+
+        if (error) {
+
+            console.error(
+                "Mark Read Error:",
+                error
+            );
+
+            return;
+
+        }
+
+
+        await loadNotifications();
+
+    }
+
+
+    async function markAllAsRead() {
+
+        if (!currentUserId) {
+            return;
+        }
+
+
+        const {
+            error
+        } =
+            await window.supabaseClient
+                .from("notifications")
+                .update({
+                    is_read: true
+                })
+                .eq(
+                    "user_id",
+                    currentUserId
+                )
+                .eq(
+                    "is_read",
+                    false
+                );
+
+
+        if (error) {
+
+            console.error(
+                "Mark All Read Error:",
+                error
+            );
+
+            return;
+
+        }
+
+
+        await loadNotifications();
+
+    }
+
+
+    /* =====================================
+       AI COMPLAINT ANALYZER
+    ===================================== */
+
+    async function analyzeComplaint() {
+
+        const complaintText =
+            document
+                .getElementById("complaint")
+                .value
+                .trim();
+
+
+        const result =
+            document.getElementById("result");
+
+
+        const analyzeButton =
+            document.getElementById(
+                "analyzeButton"
+            );
+
+
+        result.style.display =
+            "block";
+
+
+        if (!complaintText) {
+
+            result.innerHTML = `
+                <p class="error">
+                    ❌ Please enter a complaint.
+                </p>
+            `;
+
+            return;
+
+        }
+
+
+        analyzeButton.disabled =
+            true;
+
+
+        analyzeButton.innerText =
+            "⏳ Analyzing...";
+
+
+        result.innerHTML = `
+            <div class="loading">
+                ⏳ AI is analyzing your complaint...
+            </div>
+        `;
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "http://localhost:5000/api/predict",
+                    {
+                        method:
+                            "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify({
+                                text:
+                                    complaintText
+                            })
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Backend server error"
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            if (!data.success) {
+
+                result.innerHTML = `
+                    <p class="error">
+                        ❌ AI prediction failed.
+                        ${escapeHTML(
+                            data.message || ""
+                        )}
+                    </p>
+                `;
+
+                return;
+
+            }
+
+
+            const category =
+                data.category ||
+                "General";
+
+
+            const priority =
+                data.priority ||
+                "MEDIUM";
+
+
+            const department =
+                data.department ||
+                "General";
+
+
+            const suggestedAction =
+                data.suggested_action ||
+                "Forward the complaint to the appropriate campus department.";
+
+
+            let priorityClass =
+                "badge-medium";
+
+
+            if (
+                String(priority).toUpperCase() ===
+                "HIGH"
+            ) {
+
+                priorityClass =
+                    "badge-high";
+
+            }
+
+            else if (
+                String(priority).toUpperCase() ===
+                "LOW"
+            ) {
+
+                priorityClass =
+                    "badge-low";
+
+            }
+
+
+            if (!window.supabaseClient) {
+
+                result.innerHTML = `
+                    <p class="error">
+                        ❌ Supabase is not connected.
+                    </p>
+                `;
+
+                return;
+
+            }
+
+
+            let user =
+                null;
+
+
+            try {
+
+                const {
+                    data: userData
+                } =
+                    await window.supabaseClient
+                        .auth
+                        .getUser();
+
+
+                user =
+                    userData?.user ||
+                    null;
+
+            }
+
+            catch {
+
+                user =
+                    null;
+
+            }
+
+
+            const {
+                data: insertedComplaint,
+                error: insertError
+            } =
+                await window.supabaseClient
+                    .from("complaints")
+                    .insert({
+
+                        user_id:
+                            user
+                                ? user.id
+                                : null,
+
+                        complaint_text:
+                            complaintText,
+
+                        category:
+                            category,
+
+                        priority:
+                            priority,
+
+                        department:
+                            department,
+
+                        status:
+                            "PENDING"
+
+                    })
+                    .select()
+                    .single();
+
+
+            if (insertError) {
+
+                console.error(
+                    "DATABASE ERROR:",
+                    insertError
+                );
+
+
+                result.innerHTML = `
+
+                    <h3 class="result-title">
+                        🤖 AI Analysis Complete
+                    </h3>
+
+                    <p class="result-item">
+                        <b>Complaint:</b>
+                        ${escapeHTML(
+                            complaintText
+                        )}
+                    </p>
+
+                    <p class="result-item">
+                        <b>Category:</b>
+                        ${escapeHTML(
+                            category
+                        )}
+                    </p>
+
+                    <p class="result-item">
+                        <b>Priority:</b>
+
+                        <span
+                            class="
+                                badge
+                                ${priorityClass}
+                            "
+                        >
+                            ${escapeHTML(
+                                priority
+                            )}
+                        </span>
+
+                    </p>
+
+                    <p class="result-item">
+                        <b>Department:</b>
+                        ${escapeHTML(
+                            department
+                        )}
+                    </p>
+
+                    <div class="action-box">
+
+                        <b>
+                            💡 Suggested Action
+                        </b>
+
+                        <p style="margin-top:8px;">
+                            ${escapeHTML(
+                                suggestedAction
+                            )}
+                        </p>
+
+                    </div>
+
+                    <p class="result-item">
+                        <b>Status:</b>
+                        PENDING
+                    </p>
+
+                    <p class="result-item error">
+                        ❌ Database save failed:
+                        ${escapeHTML(
+                            insertError.message
+                        )}
+                    </p>
+
+                `;
+
+                return;
+
+            }
+
+
+            result.innerHTML = `
+
+                <h3 class="result-title">
+                    ✅ AI Analysis Complete & Complaint Saved
+                </h3>
+
+                <p class="result-item">
+                    <b>Complaint:</b>
+                    ${escapeHTML(
+                        complaintText
+                    )}
+                </p>
+
+                <p class="result-item">
+                    <b>Category:</b>
+                    ${escapeHTML(
+                        category
+                    )}
+                </p>
+
+                <p class="result-item">
+                    <b>Priority:</b>
+
+                    <span
+                        class="
+                            badge
+                            ${priorityClass}
+                        "
+                    >
+                        ${escapeHTML(
+                            priority
+                        )}
+                    </span>
+
+                </p>
+
+                <p class="result-item">
+                    <b>Department:</b>
+                    ${escapeHTML(
+                        department
+                    )}
+                </p>
+
+                <div class="action-box">
+
+                    <b>
+                        💡 Suggested Action
+                    </b>
+
+                    <p style="margin-top:8px;">
+                        ${escapeHTML(
+                            suggestedAction
+                        )}
+                    </p>
+
+                </div>
+
+                <p class="result-item">
+                    <b>Status:</b>
+                    PENDING
+                </p>
+
+                <p class="result-item success">
+                    ✅ Complaint saved successfully!
+                </p>
+
+            `;
+
+
+            document.getElementById(
+                "complaint"
+            ).value =
+                "";
+
+
+            await loadDashboard();
+
+            await loadNotifications();
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "AI ERROR:",
+                error
+            );
+
+
+            result.innerHTML = `
+
+                <p class="error">
+                    ❌ Connection Error
+                </p>
+
+                <br>
+
+                Make sure Backend and AI
+                servers are running.
+
+                <br><br>
+
+                Backend:
+                http://localhost:5000
+
+                <br>
+
+                AI:
+                http://127.0.0.1:8000
+
+            `;
+
+        }
+
+        finally {
+
+            analyzeButton.disabled =
+                false;
+
+
+            analyzeButton.innerText =
+                "🤖 Analyze Complaint";
+
+        }
+
+    }
+
+
+    /* =====================================
+       FORMAT DATE
+    ===================================== */
+
+    function formatDate(
+        date
+    ) {
+
+        if (!date) {
+            return "-";
+        }
+
+
+        return new Date(
+            date
+        ).toLocaleString();
+
+    }
+
+
+    /* =====================================
+       ESCAPE HTML
+    ===================================== */
+
+    function escapeHTML(
+        text
+    ) {
+
+        const div =
+            document.createElement(
+                "div"
+            );
+
+
+        div.textContent =
+            text ?? "";
+
+
+        return div.innerHTML;
+
+    }
+
+
+    /* =====================================
+       ESCAPE ATTRIBUTE
+    ===================================== */
+
+    function escapeAttribute(
+        text
+    ) {
+
+        return String(
+            text ?? ""
+        )
+            .replace(
+                /\\/g,
+                "\\\\"
+            )
+            .replace(
+                /'/g,
+                "\\'"
+            );
+
+    }
+
+
+    /* =====================================
+       CLOSE NOTIFICATION PANEL
+    ===================================== */
+
+    document.addEventListener(
+        "click",
+        function(event) {
+
+            const wrapper =
+                document.getElementById(
+                    "notificationWrapper"
+                );
+
+            const panel =
+                document.getElementById(
+                    "notificationPanel"
+                );
+
+
+            if (
+                wrapper &&
+                panel &&
+                !wrapper.contains(
+                    event.target
+                )
+            ) {
+
+                panel.classList.remove(
+                    "show"
+                );
+
+            }
+
+        }
+    );
+
+
+    /* =====================================
+       PAGE START
+    ===================================== */
+
+    loadLoggedInUser();
+
+    loadDashboard();
+
+</script>
+```
+
+</body>
+
+</html>

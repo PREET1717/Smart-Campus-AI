@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+```
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Smart Campus AI - Login</title>
+
+
+<!-- =========================
+     SUPABASE
+========================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="config.js"></script>
+
+<script src="supabase.js"></script>
+
+
+<style>
+
+    * {
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+    }
+
+
+    body {
+
+        margin: 0;
+
+        min-height: 100vh;
+
+        display: flex;
+
+        justify-content: center;
+
+        align-items: center;
+
+        background: #eef3ff;
+
+    }
+
+
+    .container {
+
+        width: 400px;
+
+        max-width: 90%;
+
+        background: white;
+
+        padding: 35px;
+
+        border-radius: 15px;
+
+        box-shadow:
+            0 8px 30px
+            rgba(0,0,0,0.1);
+
+    }
+
+
+    h1 {
+
+        text-align: center;
+
+        color: #1e3a8a;
+
+        margin-bottom: 5px;
+
+    }
+
+
+    .subtitle {
+
+        text-align: center;
+
+        color: #6b7280;
+
+        margin-bottom: 25px;
+
+    }
+
+
+    h2 {
+
+        color: #1e293b;
+
+        margin-bottom: 20px;
+
+    }
+
+
+    label {
+
+        display: block;
+
+        margin-bottom: 5px;
+
+        color: #374151;
+
+        font-weight: bold;
+
+    }
+
+
+    input {
+
+        width: 100%;
+
+        padding: 13px;
+
+        margin-bottom: 15px;
+
+        border:
+            1px solid #d1d5db;
+
+        border-radius: 8px;
+
+        font-size: 15px;
+
+    }
+
+
+    input:focus {
+
+        outline: none;
+
+        border-color: #1e3a8a;
+
+    }
+
+
+    button {
+
+        width: 100%;
+
+        padding: 13px;
+
+        border: none;
+
+        border-radius: 8px;
+
+        background: #1e3a8a;
+
+        color: white;
+
+        font-size: 16px;
+
+        font-weight: bold;
+
+        cursor: pointer;
+
+        margin-top: 5px;
+
+    }
+
+
+    button:hover {
+
+        background: #172f73;
+
+    }
+
+
+    button:disabled {
+
+        background: #94a3b8;
+
+        cursor: not-allowed;
+
+    }
+
+
+    .switch {
+
+        text-align: center;
+
+        margin-top: 20px;
+
+        color: #555;
+
+    }
+
+
+    .switch span {
+
+        color: #1e3a8a;
+
+        font-weight: bold;
+
+        cursor: pointer;
+
+    }
+
+
+    #message {
+
+        margin-top: 15px;
+
+        text-align: center;
+
+        font-weight: bold;
+
+        line-height: 1.5;
+
+    }
+
+
+    #signupBox {
+
+        display: none;
+
+    }
+
+
+</style>
+```
+
+</head>
+
+<body>
+
+<div class="container">
+
+```
+<h1>
+
+    🎓 Smart Campus AI
+
+</h1>
+
+
+<p class="subtitle">
+
+    Smart Campus Management System
+
+</p>
+
+
+
+<!-- =========================
+     LOGIN
+========================== -->
+
+<div id="loginBox">
+
+
+    <h2>
+
+        Login
+
+    </h2>
+
+
+    <label>
+        Email
+    </label>
+
+
+    <input
+        type="email"
+        id="loginEmail"
+        placeholder="Enter your email"
+        autocomplete="email"
+    >
+
+
+    <label>
+        Password
+    </label>
+
+
+    <input
+        type="password"
+        id="loginPassword"
+        placeholder="Enter your password"
+        autocomplete="current-password"
+    >
+
+
+    <button
+        id="loginButton"
+        onclick="login()"
+    >
+
+        Login
+
+    </button>
+
+
+    <div class="switch">
+
+        Don't have an account?
+
+        <span
+            onclick="showSignup()"
+        >
+
+            Sign Up
+
+        </span>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =========================
+     SIGNUP
+========================== -->
+
+<div id="signupBox">
+
+
+    <h2>
+
+        Student Signup
+
+    </h2>
+
+
+    <label>
+        Name
+    </label>
+
+
+    <input
+        type="text"
+        id="signupName"
+        placeholder="Enter your name"
+        autocomplete="name"
+    >
+
+
+    <label>
+        Email
+    </label>
+
+
+    <input
+        type="email"
+        id="signupEmail"
+        placeholder="Enter your email"
+        autocomplete="email"
+    >
+
+
+    <label>
+        Password
+    </label>
+
+
+    <input
+        type="password"
+        id="signupPassword"
+        placeholder="Create password"
+        autocomplete="new-password"
+    >
+
+
+    <button
+        id="signupButton"
+        onclick="signup()"
+    >
+
+        Create Account
+
+    </button>
+
+
+    <div class="switch">
+
+        Already have an account?
+
+        <span
+            onclick="showLogin()"
+        >
+
+            Login
+
+        </span>
+
+    </div>
+
+
+</div>
+
+
+<div id="message"></div>
+```
+
+</div>
+
+<script>
+
+
+// ==========================================
+// SHOW SIGNUP
+// ==========================================
+
+function showSignup() {
+
+    document.getElementById(
+        "loginBox"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "signupBox"
+    ).style.display =
+        "block";
+
+
+    document.getElementById(
+        "message"
+    ).innerText =
+        "";
+
+}
+
+
+
+// ==========================================
+// SHOW LOGIN
+// ==========================================
+
+function showLogin() {
+
+    document.getElementById(
+        "signupBox"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "loginBox"
+    ).style.display =
+        "block";
+
+
+    document.getElementById(
+        "message"
+    ).innerText =
+        "";
+
+}
+
+
+
+// ==========================================
+// MESSAGE
+// ==========================================
+
+function showMessage(
+    text,
+    type = "normal"
+) {
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+
+    message.innerText =
+        text;
+
+
+    if (
+        type === "error"
+    ) {
+
+        message.style.color =
+            "#dc2626";
+
+    }
+
+    else if (
+        type === "success"
+    ) {
+
+        message.style.color =
+            "#16a34a";
+
+    }
+
+    else {
+
+        message.style.color =
+            "#374151";
+
+    }
+
+}
+
+
+
+// ==========================================
+// SIGNUP
+// ==========================================
+
+async function signup() {
+
+
+    const name =
+        document
+            .getElementById(
+                "signupName"
+            )
+            .value
+            .trim();
+
+
+    const email =
+        document
+            .getElementById(
+                "signupEmail"
+            )
+            .value
+            .trim()
+            .toLowerCase();
+
+
+    const password =
+        document.getElementById(
+            "signupPassword"
+        ).value;
+
+
+    // CHECK FIELDS
+
+    if (
+        !name ||
+        !email ||
+        !password
+    ) {
+
+        showMessage(
+            "❌ Please fill all fields.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    // PASSWORD
+
+    if (
+        password.length < 6
+    ) {
+
+        showMessage(
+            "❌ Password must be at least 6 characters.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    // SUPABASE
+
+    if (
+        !window.supabaseClient
+    ) {
+
+        showMessage(
+            "❌ Supabase is not connected.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const button =
+        document.getElementById(
+            "signupButton"
+        );
+
+
+    button.disabled = true;
+
+    button.innerText =
+        "Creating...";
+
+
+    try {
+
+
+        const {
+
+            data,
+            error
+
+        } =
+            await window.supabaseClient
+
+                .auth
+
+                .signUp({
+
+                    email:
+                        email,
+
+                    password:
+                        password,
+
+                    options: {
+
+                        data: {
+
+                            name:
+                                name
+
+                        }
+
+                    }
+
+                });
+
+
+        // SIGNUP ERROR
+
+        if (error) {
+
+            console.error(
+                "Signup Error:",
+                error
+            );
+
+
+            showMessage(
+                "❌ " + error.message,
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !data?.user
+        ) {
+
+            showMessage(
+                "❌ Account creation failed.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        // ==========================================
+        // IF SESSION EXISTS
+        // ==========================================
+
+        if (
+            data.session
+        ) {
+
+            showMessage(
+                "✅ Account created successfully!",
+                "success"
+            );
+
+
+            setTimeout(
+                () => {
+
+                    window.location.href =
+                        "index.html";
+
+                },
+                1000
+            );
+
+
+            return;
+
+        }
+
+
+        // ==========================================
+        // NO SESSION
+        // ==========================================
+
+        showMessage(
+            "✅ Account created! You can now login.",
+            "success"
+        );
+
+
+        setTimeout(
+            () => {
+
+                showLogin();
+
+            },
+            800
+        );
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "Signup Error:",
+            error
+        );
+
+
+        showMessage(
+            "❌ Something went wrong during signup.",
+            "error"
+        );
+
+    }
+
+
+    finally {
+
+        button.disabled = false;
+
+        button.innerText =
+            "Create Account";
+
+    }
+
+}
+
+
+
+// ==========================================
+// LOGIN
+// ==========================================
+
+async function login() {
+
+
+    const email =
+        document
+            .getElementById(
+                "loginEmail"
+            )
+            .value
+            .trim()
+            .toLowerCase();
+
+
+    const password =
+        document
+            .getElementById(
+                "loginPassword"
+            )
+            .value;
+
+
+    // CHECK FIELDS
+
+    if (
+        !email ||
+        !password
+    ) {
+
+        showMessage(
+            "❌ Please enter email and password.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    // SUPABASE
+
+    if (
+        !window.supabaseClient
+    ) {
+
+        showMessage(
+            "❌ Supabase is not connected.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const button =
+        document.getElementById(
+            "loginButton"
+        );
+
+
+    button.disabled = true;
+
+    button.innerText =
+        "Logging in...";
+
+
+    try {
+
+
+        // ==========================================
+        // LOGIN
+        // ==========================================
+
+        const {
+
+            data,
+            error
+
+        } =
+            await window.supabaseClient
+
+                .auth
+
+                .signInWithPassword({
+
+                    email:
+                        email,
+
+                    password:
+                        password
+
+                });
+
+
+        // LOGIN ERROR
+
+        if (error) {
+
+            console.error(
+                "Login Error:",
+                error
+            );
+
+
+            showMessage(
+                "❌ " + error.message,
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        const user =
+            data?.user;
+
+
+        if (!user) {
+
+            showMessage(
+                "❌ Login failed.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        // ==========================================
+        // GET PROFILE
+        // ==========================================
+
+        const {
+
+            data: profile,
+            error: profileError
+
+        } =
+            await window.supabaseClient
+
+                .from("users")
+
+                .select(
+                    "name, email, role"
+                )
+
+                .eq(
+                    "id",
+                    user.id
+                )
+
+                .maybeSingle();
+
+
+        if (profileError) {
+
+            console.error(
+                "Profile Error:",
+                profileError
+            );
+
+
+            showMessage(
+                "✅ Login successful, but profile could not be loaded.",
+                "success"
+            );
+
+
+            setTimeout(
+                () => {
+
+                    window.location.href =
+                        "index.html";
+
+                },
+                1000
+            );
+
+
+            return;
+
+        }
+
+
+        // ==========================================
+        // ROLE
+        // ==========================================
+
+        const role =
+            (
+                profile?.role ||
+                "STUDENT"
+            )
+            .toUpperCase()
+            .trim();
+
+
+        console.log(
+            "LOGIN ROLE:",
+            role
+        );
+
+
+        showMessage(
+            "✅ Login successful!",
+            "success"
+        );
+
+
+        // ==========================================
+        // ROLE BASED REDIRECTION
+        // ==========================================
+
+        setTimeout(
+            () => {
+
+
+                // STUDENT
+
+                if (
+                    role ===
+                    "STUDENT"
+                ) {
+
+                    window.location.href =
+                        "index.html";
+
+                }
+
+
+                // ADMIN
+
+                else if (
+                    role ===
+                    "ADMIN"
+                ) {
+
+                    window.location.href =
+                        "admin-dashboard.html";
+
+                }
+
+
+                // FACULTY
+
+                else if (
+                    role ===
+                    "FACULTY"
+                ) {
+
+                    window.location.href =
+                        "faculty-dashboard.html";
+
+                }
+
+
+                // SECURITY
+
+                else if (
+                    role ===
+                    "SECURITY"
+                ) {
+
+                    window.location.href =
+                        "admin-emergency.html";
+
+                }
+
+
+                // MAINTENANCE
+
+                else if (
+                    role ===
+                    "MAINTENANCE"
+                ) {
+
+                    window.location.href =
+                        "maintenance-dashboard.html";
+
+                }
+
+
+                // UNKNOWN ROLE
+
+                else {
+
+                    console.warn(
+                        "Unknown role:",
+                        role
+                    );
+
+
+                    window.location.href =
+                        "index.html";
+
+                }
+
+            },
+            700
+        );
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "Login Error:",
+            error
+        );
+
+
+        showMessage(
+            "❌ Login failed. Please try again.",
+            "error"
+        );
+
+    }
+
+
+    finally {
+
+        button.disabled = false;
+
+        button.innerText =
+            "Login";
+
+    }
+
+}
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin - Notices & Events</title>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Config -->
+    <script src="config.js"></script>
+
+    <!-- Supabase Connection -->
+    <script src="supabase.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #222;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .add-btn {
+            background: #2563eb;
+            color: white;
+        }
+
+        .delete-btn {
+            background: #dc2626;
+            color: white;
+        }
+
+        .item {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-top: 12px;
+            border-radius: 10px;
+            background: #fafafa;
+        }
+
+        .item h3 {
+            margin: 0 0 8px;
+        }
+
+        .item p {
+            margin: 6px 0;
+        }
+
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🛠️ Admin Notice & Event Panel</h1>
+
+    <!-- ADD NOTICE -->
+    <div class="card">
+
+        <h2>📢 Add College Notice</h2>
+
+        <label>Notice Title</label>
+
+        <input
+            type="text"
+            id="noticeTitle"
+            placeholder="Enter notice title"
+        >
+
+        <label>Description</label>
+
+        <textarea
+            id="noticeDescription"
+            placeholder="Enter notice description"
+        ></textarea>
+
+        <button class="add-btn" onclick="addNotice()">
+            ➕ Add Notice
+        </button>
+
+        <p id="noticeMessage"></p>
+
+    </div>
+
+
+    <!-- ADD EVENT -->
+    <div class="card">
+
+        <h2>📅 Add College Event</h2>
+
+        <label>Event Title</label>
+
+        <input
+            type="text"
+            id="eventTitle"
+            placeholder="Enter event title"
+        >
+
+        <label>Description</label>
+
+        <textarea
+            id="eventDescription"
+            placeholder="Enter event description"
+        ></textarea>
+
+        <label>Event Date & Time</label>
+
+        <input
+            type="datetime-local"
+            id="eventDate"
+        >
+
+        <label>Location</label>
+
+        <input
+            type="text"
+            id="eventLocation"
+            placeholder="Example: Seminar Hall"
+        >
+
+        <button class="add-btn" onclick="addEvent()">
+            ➕ Add Event
+        </button>
+
+        <p id="eventMessage"></p>
+
+    </div>
+
+
+    <!-- ALL NOTICES -->
+    <div class="card">
+
+        <h2>📢 All Notices</h2>
+
+        <div id="noticesList">
+            Loading notices...
+        </div>
+
+    </div>
+
+
+    <!-- ALL EVENTS -->
+    <div class="card">
+
+        <h2>📅 All Events</h2>
+
+        <div id="eventsList">
+            Loading events...
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    // ================================
+    // ADD NOTICE
+    // ================================
+
+    async function addNotice() {
+
+        const title =
+            document.getElementById("noticeTitle").value.trim();
+
+        const description =
+            document.getElementById("noticeDescription").value.trim();
+
+        const message =
+            document.getElementById("noticeMessage");
+
+
+        if (!title) {
+
+            message.innerHTML =
+                "<span class='error'>❌ Please enter notice title.</span>";
+
+            return;
+        }
+
+
+        const { data, error } = await supabaseClient
+            .from("notices")
+            .insert([
+                {
+                    title: title,
+                    description: description
+                }
+            ])
+            .select();
+
+
+        if (error) {
+
+            console.error(error);
+
+            message.innerHTML =
+                "<span class='error'>❌ Failed to add notice: "
+                + error.message +
+                "</span>";
+
+            return;
+        }
+
+
+        message.innerHTML =
+            "<span class='success'>✅ Notice added successfully!</span>";
+
+
+        document.getElementById("noticeTitle").value = "";
+        document.getElementById("noticeDescription").value = "";
+
+
+        loadNotices();
+    }
+
+
+
+    // ================================
+    // ADD EVENT
+    // ================================
+
+    async function addEvent() {
+
+        const title =
+            document.getElementById("eventTitle").value.trim();
+
+        const description =
+            document.getElementById("eventDescription").value.trim();
+
+        const eventDate =
+            document.getElementById("eventDate").value;
+
+        const location =
+            document.getElementById("eventLocation").value.trim();
+
+        const message =
+            document.getElementById("eventMessage");
+
+
+        if (!title) {
+
+            message.innerHTML =
+                "<span class='error'>❌ Please enter event title.</span>";
+
+            return;
+        }
+
+
+        if (!eventDate) {
+
+            message.innerHTML =
+                "<span class='error'>❌ Please select event date.</span>";
+
+            return;
+        }
+
+
+        const { data, error } = await supabaseClient
+            .from("events")
+            .insert([
+                {
+                    title: title,
+                    description: description,
+                    event_date: eventDate,
+                    location: location
+                }
+            ])
+            .select();
+
+
+        if (error) {
+
+            console.error(error);
+
+            message.innerHTML =
+                "<span class='error'>❌ Failed to add event: "
+                + error.message +
+                "</span>";
+
+            return;
+        }
+
+
+        message.innerHTML =
+            "<span class='success'>✅ Event added successfully!</span>";
+
+
+        document.getElementById("eventTitle").value = "";
+        document.getElementById("eventDescription").value = "";
+        document.getElementById("eventDate").value = "";
+        document.getElementById("eventLocation").value = "";
+
+
+        loadEvents();
+    }
+
+
+
+    // ================================
+    // LOAD NOTICES
+    // ================================
+
+    async function loadNotices() {
+
+        const container =
+            document.getElementById("noticesList");
+
+
+        const { data, error } = await supabaseClient
+            .from("notices")
+            .select("*")
+            .order("created_at", {
+                ascending: false
+            });
+
+
+        if (error) {
+
+            console.error(error);
+
+            container.innerHTML =
+                "<p class='error'>❌ Failed to load notices.</p>";
+
+            return;
+        }
+
+
+        if (!data || data.length === 0) {
+
+            container.innerHTML =
+                "<p>No notices available.</p>";
+
+            return;
+        }
+
+
+        container.innerHTML = "";
+
+
+        data.forEach(notice => {
+
+            const div =
+                document.createElement("div");
+
+            div.className = "item";
+
+
+            div.innerHTML = `
+                <h3>📢 ${escapeHTML(notice.title)}</h3>
+
+                <p>
+                    ${escapeHTML(notice.description || "")}
+                </p>
+
+                <p>
+                    <small>
+                        Created:
+                        ${new Date(notice.created_at).toLocaleString()}
+                    </small>
+                </p>
+
+                <button
+                    class="delete-btn"
+                    onclick="deleteNotice('${notice.id}')"
+                >
+                    🗑️ Delete
+                </button>
+            `;
+
+
+            container.appendChild(div);
+
+        });
+
+    }
+
+
+
+    // ================================
+    // LOAD EVENTS
+    // ================================
+
+    async function loadEvents() {
+
+        const container =
+            document.getElementById("eventsList");
+
+
+        const { data, error } = await supabaseClient
+            .from("events")
+            .select("*")
+            .order("event_date", {
+                ascending: true
+            });
+
+
+        if (error) {
+
+            console.error(error);
+
+            container.innerHTML =
+                "<p class='error'>❌ Failed to load events.</p>";
+
+            return;
+        }
+
+
+        if (!data || data.length === 0) {
+
+            container.innerHTML =
+                "<p>No events available.</p>";
+
+            return;
+        }
+
+
+        container.innerHTML = "";
+
+
+        data.forEach(event => {
+
+            const div =
+                document.createElement("div");
+
+            div.className = "item";
+
+
+            div.innerHTML = `
+                <h3>📅 ${escapeHTML(event.title)}</h3>
+
+                <p>
+                    ${escapeHTML(event.description || "")}
+                </p>
+
+                <p>
+                    <b>📍 Location:</b>
+                    ${escapeHTML(event.location || "Not specified")}
+                </p>
+
+                <p>
+                    <b>🕒 Date:</b>
+                    ${new Date(event.event_date).toLocaleString()}
+                </p>
+
+                <button
+                    class="delete-btn"
+                    onclick="deleteEvent('${event.id}')"
+                >
+                    🗑️ Delete
+                </button>
+            `;
+
+
+            container.appendChild(div);
+
+        });
+
+    }
+
+
+
+    // ================================
+    // DELETE NOTICE
+    // ================================
+
+    async function deleteNotice(id) {
+
+        const confirmDelete =
+            confirm("Are you sure you want to delete this notice?");
+
+
+        if (!confirmDelete) {
+            return;
+        }
+
+
+        const { error } = await supabaseClient
+            .from("notices")
+            .delete()
+            .eq("id", id);
+
+
+        if (error) {
+
+            alert(
+                "❌ Failed to delete notice: "
+                + error.message
+            );
+
+            return;
+        }
+
+
+        alert("✅ Notice deleted successfully!");
+
+        loadNotices();
+
+    }
+
+
+
+    // ================================
+    // DELETE EVENT
+    // ================================
+
+    async function deleteEvent(id) {
+
+        const confirmDelete =
+            confirm("Are you sure you want to delete this event?");
+
+
+        if (!confirmDelete) {
+            return;
+        }
+
+
+        const { error } = await supabaseClient
+            .from("events")
+            .delete()
+            .eq("id", id);
+
+
+        if (error) {
+
+            alert(
+                "❌ Failed to delete event: "
+                + error.message
+            );
+
+            return;
+        }
+
+
+        alert("✅ Event deleted successfully!");
+
+        loadEvents();
+
+    }
+
+
+
+    // ================================
+    // SECURITY: ESCAPE HTML
+    // ================================
+
+    function escapeHTML(text) {
+
+        const div =
+            document.createElement("div");
+
+        div.textContent = text;
+
+        return div.innerHTML;
+    }
+
+
+
+    // ================================
+    // PAGE LOAD
+    // ================================
+
+    loadNotices();
+    loadEvents();
+
+</script>
+
+</body>
+</html>

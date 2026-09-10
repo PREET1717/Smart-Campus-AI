@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+```
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Maintenance Dashboard - Smart Campus AI</title>
+
+
+<!-- SUPABASE -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="config.js"></script>
+
+<script src="supabase.js"></script>
+
+
+<style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+
+    body {
+        margin: 0;
+
+        font-family: Arial, sans-serif;
+
+        background: #f4f6f9;
+    }
+
+
+    header {
+
+        background: #1e293b;
+
+        color: white;
+
+        padding: 20px;
+
+        text-align: center;
+    }
+
+
+    header h1 {
+        margin: 0;
+    }
+
+
+    header p {
+        margin: 8px 0 0;
+    }
+
+
+    .container {
+
+        max-width: 1200px;
+
+        margin: auto;
+
+        padding: 25px;
+    }
+
+
+    .cards {
+
+        display: grid;
+
+        grid-template-columns:
+            repeat(auto-fit, minmax(200px, 1fr));
+
+        gap: 20px;
+
+        margin-bottom: 30px;
+    }
+
+
+    .card {
+
+        background: white;
+
+        padding: 22px;
+
+        border-radius: 12px;
+
+        box-shadow:
+            0 3px 10px rgba(0,0,0,0.08);
+
+        text-align: center;
+    }
+
+
+    .card h3 {
+
+        margin: 0 0 10px;
+
+        color: #475569;
+    }
+
+
+    .number {
+
+        font-size: 35px;
+
+        font-weight: bold;
+
+        color: #2563eb;
+    }
+
+
+    .section {
+
+        background: white;
+
+        padding: 20px;
+
+        margin-bottom: 25px;
+
+        border-radius: 12px;
+
+        box-shadow:
+            0 3px 10px rgba(0,0,0,0.08);
+    }
+
+
+    .section h2 {
+        margin-top: 0;
+    }
+
+
+    table {
+
+        width: 100%;
+
+        border-collapse: collapse;
+
+        min-width: 900px;
+    }
+
+
+    th,
+    td {
+
+        padding: 12px;
+
+        border-bottom:
+            1px solid #ddd;
+
+        text-align: left;
+    }
+
+
+    th {
+
+        background: #f1f5f9;
+    }
+
+
+    .table-wrapper {
+
+        overflow-x: auto;
+    }
+
+
+    .status-select {
+
+        display: block;
+
+        width: 150px;
+
+        padding: 8px 10px;
+
+        background: white;
+
+        color: #111827;
+
+        border:
+            1px solid #94a3b8;
+
+        border-radius: 6px;
+
+        cursor: pointer;
+
+        font-size: 14px;
+    }
+
+
+    button {
+
+        padding: 9px 15px;
+
+        border: none;
+
+        border-radius: 7px;
+
+        background: #2563eb;
+
+        color: white;
+
+        cursor: pointer;
+    }
+
+
+    button:hover {
+        opacity: 0.9;
+    }
+
+
+    .logout {
+
+        background: #dc2626;
+
+        margin-top: 15px;
+    }
+
+
+    .refresh {
+
+        float: right;
+    }
+
+
+    .message {
+
+        padding: 10px;
+
+        margin-bottom: 15px;
+
+        border-radius: 7px;
+
+        display: none;
+    }
+
+
+    .error {
+
+        background: #fee2e2;
+
+        color: #991b1b;
+    }
+
+
+    .success {
+
+        background: #dcfce7;
+
+        color: #166534;
+    }
+
+
+    .empty {
+
+        padding: 30px;
+
+        text-align: center;
+
+        color: #64748b;
+    }
+
+
+    #accessLoading {
+
+        position: fixed;
+
+        inset: 0;
+
+        background: #f4f6f9;
+
+        display: flex;
+
+        justify-content: center;
+
+        align-items: center;
+
+        flex-direction: column;
+
+        z-index: 9999;
+    }
+
+
+    #dashboardContent {
+
+        display: none;
+    }
+
+
+    @media(max-width: 700px) {
+
+        .container {
+            padding: 15px;
+        }
+
+        table {
+            font-size: 13px;
+        }
+
+        th,
+        td {
+            padding: 8px;
+        }
+    }
+
+</style>
+```
+
+</head>
+
+<body>
+
+<!-- =========================
+     ACCESS CHECK
+========================== -->
+
+<div id="accessLoading">
+
+```
+<h2>🔐 Checking Maintenance Access...</h2>
+
+<p>Please wait...</p>
+```
+
+</div>
+
+<!-- =========================
+     DASHBOARD
+========================== -->
+
+<div id="dashboardContent">
+
+<header>
+
+```
+<h1>
+    🔧 Smart Campus AI
+</h1>
+
+<p id="maintenanceName">
+    Maintenance Dashboard
+</p>
+
+<button
+    class="logout"
+    onclick="logout()"
+>
+    Logout
+</button>
+```
+
+</header>
+
+<div class="container">
+
+```
+<!-- MESSAGE -->
+
+<div
+    id="message"
+    class="message"
+></div>
+
+
+<!-- =========================
+     STATISTICS
+========================== -->
+
+<div class="cards">
+
+
+    <div class="card">
+
+        <h3>
+            🔧 Maintenance Complaints
+        </h3>
+
+        <div
+            class="number"
+            id="totalComplaints"
+        >
+            0
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3>
+            ⏳ Pending
+        </h3>
+
+        <div
+            class="number"
+            id="pendingComplaints"
+        >
+            0
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3>
+            🔄 In Progress
+        </h3>
+
+        <div
+            class="number"
+            id="inProgressComplaints"
+        >
+            0
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <h3>
+            ✅ Resolved
+        </h3>
+
+        <div
+            class="number"
+            id="resolvedComplaints"
+        >
+            0
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================
+     COMPLAINT MANAGEMENT
+========================== -->
+
+<div class="section">
+
+    <h2>
+        🔧 Maintenance Complaints
+    </h2>
+
+
+    <button
+        class="refresh"
+        onclick="loadComplaints()"
+    >
+        🔄 Refresh
+    </button>
+
+
+    <br>
+    <br>
+
+
+    <div
+        class="table-wrapper"
+        id="complaintsContainer"
+    >
+
+        Loading complaints...
+
+    </div>
+
+</div>
+```
+
+</div>
+
+</div>
+
+<script>
+
+
+// =====================================
+// CHECK MAINTENANCE ACCESS
+// =====================================
+
+async function checkMaintenanceAccess() {
+
+    try {
+
+
+        // SUPABASE CHECK
+
+        if (!window.supabaseClient) {
+
+            alert(
+                "❌ Supabase is not connected."
+            );
+
+            window.location.href =
+                "auth.html";
+
+            return false;
+        }
+
+
+        // GET USER
+
+        const {
+
+            data: userData,
+            error: userError
+
+        } =
+            await supabaseClient
+                .auth
+                .getUser();
+
+
+        if (
+            userError ||
+            !userData?.user
+        ) {
+
+            alert(
+                "❌ Please login first."
+            );
+
+            window.location.href =
+                "auth.html";
+
+            return false;
+        }
+
+
+        const user =
+            userData.user;
+
+
+        // GET PROFILE
+
+        const {
+
+            data: profile,
+            error: profileError
+
+        } =
+            await supabaseClient
+
+                .from("users")
+
+                .select(
+                    "name, role"
+                )
+
+                .eq(
+                    "id",
+                    user.id
+                )
+
+                .maybeSingle();
+
+
+        if (profileError) {
+
+            console.error(
+                profileError
+            );
+
+            alert(
+                "❌ Unable to verify your role."
+            );
+
+            window.location.href =
+                "index.html";
+
+            return false;
+        }
+
+
+        const role =
+            (
+                profile?.role ||
+                "STUDENT"
+            ).toUpperCase();
+
+
+        // MAINTENANCE ALLOWED
+
+        if (
+            role === "MAINTENANCE"
+        ) {
+
+            document.getElementById(
+                "maintenanceName"
+            ).innerText =
+                "🔧 " +
+                (
+                    profile?.name ||
+                    "Maintenance Team"
+                );
+
+
+            document.getElementById(
+                "accessLoading"
+            ).style.display =
+                "none";
+
+
+            document.getElementById(
+                "dashboardContent"
+            ).style.display =
+                "block";
+
+
+            return true;
+        }
+
+
+        // ADMIN ALSO ALLOWED
+
+        if (
+            role === "ADMIN"
+        ) {
+
+            document.getElementById(
+                "maintenanceName"
+            ).innerText =
+                "🔧 Maintenance Dashboard — Admin";
+
+
+            document.getElementById(
+                "accessLoading"
+            ).style.display =
+                "none";
+
+
+            document.getElementById(
+                "dashboardContent"
+            ).style.display =
+                "block";
+
+
+            return true;
+        }
+
+
+        // ACCESS DENIED
+
+        alert(
+            "❌ Access Denied. Maintenance team only."
+        );
+
+
+        window.location.href =
+            "index.html";
+
+
+        return false;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Access Error:",
+            error
+        );
+
+
+        alert(
+            "❌ Access verification failed."
+        );
+
+
+        window.location.href =
+            "auth.html";
+
+
+        return false;
+    }
+
+}
+
+
+
+// =====================================
+// MESSAGE
+// =====================================
+
+function showMessage(
+    text,
+    type
+) {
+
+    const box =
+        document.getElementById(
+            "message"
+        );
+
+
+    box.innerText =
+        text;
+
+
+    box.className =
+        "message " + type;
+
+
+    box.style.display =
+        "block";
+
+
+    setTimeout(
+        () => {
+
+            box.style.display =
+                "none";
+
+        },
+        3000
+    );
+
+}
+
+
+
+// =====================================
+// LOAD COMPLAINTS
+// =====================================
+
+async function loadComplaints() {
+
+    const container =
+        document.getElementById(
+            "complaintsContainer"
+        );
+
+
+    container.innerHTML =
+        "Loading complaints...";
+
+
+    try {
+
+
+        const {
+
+            data,
+            error
+
+        } =
+            await supabaseClient
+
+                .from("complaints")
+
+                .select("*")
+
+                .eq(
+                    "department",
+                    "Maintenance"
+                )
+
+                .order(
+                    "created_at",
+                    {
+                        ascending:
+                            false
+                    }
+                );
+
+
+        if (error) {
+
+            console.error(
+                "Complaint Error:",
+                error
+            );
+
+
+            container.innerHTML = `
+
+                <div class="error">
+
+                    ❌ Failed to load complaints.
+
+                    <br><br>
+
+                    ${escapeHTML(
+                        error.message
+                    )}
+
+                </div>
+
+            `;
+
+            return;
+        }
+
+
+        const complaints =
+            data || [];
+
+
+        updateStatistics(
+            complaints
+        );
+
+
+        if (
+            complaints.length === 0
+        ) {
+
+            container.innerHTML = `
+
+                <div class="empty">
+
+                    ✅ No maintenance complaints available.
+
+                </div>
+
+            `;
+
+            return;
+        }
+
+
+        let html = `
+
+            <table>
+
+                <tr>
+
+                    <th>
+                        Complaint
+                    </th>
+
+                    <th>
+                        Category
+                    </th>
+
+                    <th>
+                        Priority
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                    <th>
+                        Date
+                    </th>
+
+                </tr>
+
+        `;
+
+
+        complaints.forEach(
+            complaint => {
+
+
+                html += `
+
+                    <tr>
+
+                        <td>
+
+                            ${escapeHTML(
+                                complaint
+                                    .complaint_text
+                            )}
+
+                        </td>
+
+
+                        <td>
+
+                            ${escapeHTML(
+                                complaint.category
+                                || "-"
+                            )}
+
+                        </td>
+
+
+                        <td>
+
+                            ${escapeHTML(
+                                complaint.priority
+                                || "-"
+                            )}
+
+                        </td>
+
+
+                        <td>
+
+                            <select
+
+                                class="status-select"
+
+                                onchange="
+                                    updateComplaintStatus(
+                                        '${complaint.id}',
+                                        this.value
+                                    )
+                                "
+                            >
+
+                                <option
+                                    value="PENDING"
+                                    ${
+                                        complaint.status ===
+                                        "PENDING"
+                                            ? "selected"
+                                            : ""
+                                    }
+                                >
+                                    PENDING
+                                </option>
+
+
+                                <option
+                                    value="IN_PROGRESS"
+                                    ${
+                                        complaint.status ===
+                                        "IN_PROGRESS"
+                                            ? "selected"
+                                            : ""
+                                    }
+                                >
+                                    IN PROGRESS
+                                </option>
+
+
+                                <option
+                                    value="RESOLVED"
+                                    ${
+                                        complaint.status ===
+                                        "RESOLVED"
+                                            ? "selected"
+                                            : ""
+                                    }
+                                >
+                                    RESOLVED
+                                </option>
+
+                            </select>
+
+                        </td>
+
+
+                        <td>
+
+                            ${formatDate(
+                                complaint.created_at
+                            )}
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+        );
+
+
+        html +=
+            "</table>";
+
+
+        container.innerHTML =
+            html;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        container.innerHTML = `
+
+            <div class="error">
+
+                ❌ Something went wrong.
+
+                <br><br>
+
+                ${escapeHTML(
+                    error.message
+                )}
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+
+// =====================================
+// UPDATE STATISTICS
+// =====================================
+
+function updateStatistics(
+    complaints
+) {
+
+    const pending =
+        complaints.filter(
+            c =>
+                c.status ===
+                "PENDING"
+        ).length;
+
+
+    const inProgress =
+        complaints.filter(
+            c =>
+                c.status ===
+                "IN_PROGRESS"
+        ).length;
+
+
+    const resolved =
+        complaints.filter(
+            c =>
+                c.status ===
+                "RESOLVED"
+        ).length;
+
+
+    document.getElementById(
+        "totalComplaints"
+    ).innerText =
+        complaints.length;
+
+
+    document.getElementById(
+        "pendingComplaints"
+    ).innerText =
+        pending;
+
+
+    document.getElementById(
+        "inProgressComplaints"
+    ).innerText =
+        inProgress;
+
+
+    document.getElementById(
+        "resolvedComplaints"
+    ).innerText =
+        resolved;
+
+}
+
+
+
+// =====================================
+// UPDATE STATUS
+// =====================================
+
+async function updateComplaintStatus(
+    id,
+    status
+) {
+
+    try {
+
+
+        const {
+
+            error
+
+        } =
+            await supabaseClient
+
+                .from("complaints")
+
+                .update({
+
+                    status:
+                        status
+
+                })
+
+                .eq(
+                    "id",
+                    id
+                );
+
+
+        if (error) {
+
+            console.error(
+                error
+            );
+
+
+            showMessage(
+                "❌ Failed to update complaint.",
+                "error"
+            );
+
+
+            return;
+        }
+
+
+        showMessage(
+            "✅ Complaint status updated!",
+            "success"
+        );
+
+
+        await loadComplaints();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        showMessage(
+            "❌ Something went wrong.",
+            "error"
+        );
+
+    }
+
+}
+
+
+
+// =====================================
+// FORMAT DATE
+// =====================================
+
+function formatDate(date) {
+
+    if (!date) {
+
+        return "-";
+
+    }
+
+
+    return new Date(
+        date
+    ).toLocaleString();
+
+}
+
+
+
+// =====================================
+// ESCAPE HTML
+// =====================================
+
+function escapeHTML(text) {
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+
+    div.textContent =
+        text ?? "";
+
+
+    return div.innerHTML;
+
+}
+
+
+
+// =====================================
+// LOGOUT
+// =====================================
+
+async function logout() {
+
+    await supabaseClient
+        .auth
+        .signOut();
+
+
+    window.location.href =
+        "auth.html";
+
+}
+
+
+
+// =====================================
+// START
+// =====================================
+
+checkMaintenanceAccess().then(
+    isAllowed => {
+
+        if (isAllowed) {
+
+            loadComplaints();
+
+        }
+
+    }
+);
+
+
+</script>
+
+</body>
+
+</html>

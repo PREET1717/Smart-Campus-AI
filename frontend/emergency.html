@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+```
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Smart Campus AI - Emergency SOS</title>
+
+<!-- SUPABASE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="config.js"></script>
+<script src="supabase.js"></script>
+
+<style>
+
+    * {
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+    }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        background: #f3f4f6;
+        color: #1f2937;
+    }
+
+    .header {
+        background: #991b1b;
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .header h1 {
+        margin: 0;
+        font-size: 30px;
+    }
+
+    .header p {
+        margin-bottom: 0;
+    }
+
+    .container {
+        max-width: 650px;
+        margin: 40px auto;
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .warning {
+        background: #fee2e2;
+        color: #991b1b;
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .warning strong {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    label {
+        display: block;
+        font-weight: bold;
+        margin-top: 15px;
+        margin-bottom: 7px;
+    }
+
+    select,
+    input,
+    textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 15px;
+        outline: none;
+    }
+
+    select:focus,
+    input:focus,
+    textarea:focus {
+        border-color: #991b1b;
+    }
+
+    textarea {
+        height: 100px;
+        resize: vertical;
+    }
+
+    .location-status {
+        margin-top: 8px;
+        font-size: 13px;
+        color: #555;
+    }
+
+    .sos-button {
+        width: 180px;
+        height: 180px;
+        display: block;
+        margin: 25px auto;
+        border-radius: 50%;
+        border: none;
+        background: #dc2626;
+        color: white;
+        font-size: 32px;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 8px 20px rgba(220, 38, 38, 0.4);
+        transition: 0.2s;
+    }
+
+    .sos-button:hover {
+        background: #b91c1c;
+        transform: scale(1.03);
+    }
+
+    .sos-button:disabled {
+        background: #9ca3af;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    #message {
+        text-align: center;
+        font-weight: bold;
+        margin-top: 20px;
+        line-height: 1.6;
+    }
+
+    .success {
+        color: #166534;
+    }
+
+    .error {
+        color: #991b1b;
+    }
+
+    .info {
+        color: #1d4ed8;
+    }
+
+    .alert-card {
+        margin-top: 20px;
+        padding: 18px;
+        border-radius: 10px;
+        background: #f0fdf4;
+        border: 1px solid #86efac;
+        display: none;
+    }
+
+    .alert-card h3 {
+        margin-top: 0;
+        color: #166534;
+    }
+
+    .alert-id {
+        word-break: break-all;
+        background: white;
+        padding: 8px;
+        border-radius: 6px;
+        font-size: 13px;
+        margin-top: 8px;
+    }
+
+    .back {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+        color: #1e3a8a;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    @media (max-width: 650px) {
+
+        .container {
+            margin: 20px;
+            padding: 20px;
+        }
+
+        .sos-button {
+            width: 150px;
+            height: 150px;
+            font-size: 28px;
+        }
+
+    }
+
+</style>
+```
+
+</head>
+
+<body>
+
+```
+<div class="header">
+
+    <h1>
+        🚨 Emergency SOS
+    </h1>
+
+    <p>
+        Smart Campus AI
+    </p>
+
+</div>
+
+
+<div class="container">
+
+    <div class="warning">
+
+        <strong>
+            ⚠️ Emergency Only
+        </strong>
+
+        Use this button only for genuine campus emergencies.
+
+    </div>
+
+
+    <!-- EMERGENCY TYPE -->
+
+    <label for="alertType">
+        Emergency Type
+    </label>
+
+    <select id="alertType">
+
+        <option value="Medical Emergency">
+            Medical Emergency
+        </option>
+
+        <option value="Fire">
+            Fire
+        </option>
+
+        <option value="Accident">
+            Accident
+        </option>
+
+        <option value="Security">
+            Security Emergency
+        </option>
+
+        <option value="Other">
+            Other
+        </option>
+
+    </select>
+
+
+    <!-- LOCATION -->
+
+    <label for="location">
+        Location
+    </label>
+
+    <input
+        type="text"
+        id="location"
+        placeholder="Getting your location..."
+    >
+
+    <div
+        id="locationStatus"
+        class="location-status"
+    >
+        📍 Detecting your location...
+    </div>
+
+
+    <!-- MESSAGE -->
+
+    <label for="emergencyMessage">
+        Emergency Message
+    </label>
+
+    <textarea
+        id="emergencyMessage"
+        placeholder="Describe the emergency..."
+    ></textarea>
+
+
+    <!-- SOS BUTTON -->
+
+    <button
+        id="sosButton"
+        class="sos-button"
+        onclick="sendSOS()"
+    >
+        SOS
+    </button>
+
+
+    <!-- MESSAGE -->
+
+    <div id="message"></div>
+
+
+    <!-- SUCCESS CARD -->
+
+    <div
+        id="alertCard"
+        class="alert-card"
+    >
+
+        <h3>
+            ✅ Emergency Alert Created
+        </h3>
+
+        <p>
+            Your alert has been sent to the campus
+            emergency system.
+        </p>
+
+        <p>
+            <b>Status:</b> ACTIVE
+        </p>
+
+        <p>
+            <b>Alert ID:</b>
+        </p>
+
+        <div
+            id="alertId"
+            class="alert-id"
+        ></div>
+
+        <p
+            style="
+                margin-bottom:0;
+                color:#166534;
+            "
+        >
+            🚨 Security/Admin can now see this alert
+            in the emergency dashboard.
+        </p>
+
+    </div>
+
+
+    <!-- BACK -->
+
+    <a
+        href="index.html"
+        class="back"
+    >
+        ← Back to Dashboard
+    </a>
+
+</div>
+
+
+<script>
+
+    let locationDetected = false;
+
+
+    // ==========================================
+    // GET LOCATION
+    // ==========================================
+
+    function getLocation() {
+
+        const locationBox =
+            document.getElementById(
+                "location"
+            );
+
+        const locationStatus =
+            document.getElementById(
+                "locationStatus"
+            );
+
+
+        locationStatus.innerHTML =
+            "📍 Detecting your location...";
+
+
+        if (!navigator.geolocation) {
+
+            locationDetected = false;
+
+            locationStatus.innerHTML =
+                "⚠️ GPS is not supported. Enter location manually.";
+
+            locationBox.placeholder =
+                "Example: Block A, Room 204";
+
+            return;
+
+        }
+
+
+        navigator.geolocation.getCurrentPosition(
+
+            function(position) {
+
+                const latitude =
+                    position.coords.latitude;
+
+                const longitude =
+                    position.coords.longitude;
+
+
+                locationBox.value =
+                    "GPS: " +
+                    latitude.toFixed(6) +
+                    ", " +
+                    longitude.toFixed(6);
+
+
+                locationDetected = true;
+
+
+                locationStatus.innerHTML =
+                    "✅ Location detected automatically.";
+
+            },
+
+            function(error) {
+
+                console.log(
+                    "Location error:",
+                    error
+                );
+
+
+                locationDetected = false;
+
+
+                locationStatus.innerHTML =
+                    "⚠️ GPS unavailable. Please enter your campus location manually.";
+
+                locationBox.placeholder =
+                    "Example: Block A, Room 204";
+
+            },
+
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            }
+
+        );
+
+    }
+
+
+    // ==========================================
+    // SEND SOS
+    // ==========================================
+
+    async function sendSOS() {
+
+        const alertType =
+            document.getElementById(
+                "alertType"
+            ).value;
+
+
+        const location =
+            document.getElementById(
+                "location"
+            ).value.trim();
+
+
+        const emergencyMessage =
+            document.getElementById(
+                "emergencyMessage"
+            ).value.trim();
+
+
+        const messageBox =
+            document.getElementById(
+                "message"
+            );
+
+
+        const sosButton =
+            document.getElementById(
+                "sosButton"
+            );
+
+
+        const alertCard =
+            document.getElementById(
+                "alertCard"
+            );
+
+
+        // HIDE OLD SUCCESS
+
+        alertCard.style.display =
+            "none";
+
+
+        // CHECK LOCATION
+
+        if (!location) {
+
+            messageBox.className =
+                "error";
+
+            messageBox.innerHTML =
+                "❌ Please enter your location.";
+
+            return;
+
+        }
+
+
+        // CHECK MESSAGE
+
+        if (!emergencyMessage) {
+
+            messageBox.className =
+                "error";
+
+            messageBox.innerHTML =
+                "❌ Please describe the emergency.";
+
+            return;
+
+        }
+
+
+        // CHECK SUPABASE
+
+        if (!window.supabaseClient) {
+
+            messageBox.className =
+                "error";
+
+            messageBox.innerHTML =
+                "❌ Supabase is not connected.";
+
+            console.error(
+                "supabaseClient not found"
+            );
+
+            return;
+
+        }
+
+
+        // DISABLE BUTTON
+
+        sosButton.disabled =
+            true;
+
+        sosButton.innerHTML =
+            "SENDING...";
+
+
+        messageBox.className =
+            "info";
+
+        messageBox.innerHTML =
+            "⏳ Sending emergency alert...";
+
+
+        try {
+
+            // GET USER
+
+            const {
+                data: userData,
+                error: userError
+            } =
+                await window.supabaseClient
+                    .auth
+                    .getUser();
+
+
+            if (userError) {
+
+                console.warn(
+                    "User check warning:",
+                    userError
+                );
+
+            }
+
+
+            const user =
+                userData?.user || null;
+
+
+            // INSERT ALERT
+
+            const {
+                data,
+                error
+            } =
+                await window.supabaseClient
+                    .from("emergency_alerts")
+                    .insert({
+
+                        user_id:
+                            user
+                                ? user.id
+                                : null,
+
+                        alert_type:
+                            alertType,
+
+                        location:
+                            location,
+
+                        message:
+                            emergencyMessage,
+
+                        status:
+                            "ACTIVE"
+
+                    })
+                    .select()
+                    .single();
+
+
+            if (error) {
+
+                console.error(
+                    "Supabase error:",
+                    error
+                );
+
+
+                messageBox.className =
+                    "error";
+
+                messageBox.innerHTML =
+                    "❌ Failed to send SOS.<br><br>" +
+                    escapeHTML(
+                        error.message
+                    );
+
+
+                sosButton.disabled =
+                    false;
+
+                sosButton.innerHTML =
+                    "SOS";
+
+                return;
+
+            }
+
+
+            // SUCCESS
+
+            console.log(
+                "Emergency alert:",
+                data
+            );
+
+
+            messageBox.className =
+                "success";
+
+            messageBox.innerHTML =
+                "✅ Emergency alert sent successfully!";
+
+
+            // SHOW ALERT CARD
+
+            document.getElementById(
+                "alertId"
+            ).innerText =
+                data?.id || "Created";
+
+
+            alertCard.style.display =
+                "block";
+
+
+            // CLEAR MESSAGE
+
+            document.getElementById(
+                "emergencyMessage"
+            ).value =
+                "";
+
+
+            // BUTTON
+
+            sosButton.innerHTML =
+                "SENT ✓";
+
+
+            // KEEP BUTTON DISABLED
+            // Prevent accidental duplicate SOS
+
+
+            // DETECT LOCATION AGAIN
+
+            setTimeout(
+                getLocation,
+                1000
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "SOS error:",
+                error
+            );
+
+
+            messageBox.className =
+                "error";
+
+            messageBox.innerHTML =
+                "❌ Something went wrong.<br><br>" +
+                escapeHTML(
+                    error.message
+                );
+
+
+            sosButton.disabled =
+                false;
+
+            sosButton.innerHTML =
+                "SOS";
+
+        }
+
+    }
+
+
+    // ==========================================
+    // ESCAPE HTML
+    // ==========================================
+
+    function escapeHTML(
+        text
+    ) {
+
+        const div =
+            document.createElement(
+                "div"
+            );
+
+        div.textContent =
+            text ?? "";
+
+        return div.innerHTML;
+
+    }
+
+
+    // ==========================================
+    // PAGE LOAD
+    // ==========================================
+
+    window.addEventListener(
+        "load",
+        function() {
+
+            getLocation();
+
+        }
+    );
+
+</script>
+```
+
+</body>
+
+</html>

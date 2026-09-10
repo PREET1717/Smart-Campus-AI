@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Smart Campus AI - Lost & Found</title>
+
+    <!-- SUPABASE -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="config.js"></script>
+    <script src="supabase.js"></script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+        .header {
+            background: #1e3a8a;
+            color: white;
+            padding: 18px 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .back-btn {
+            background: white;
+            color: #1e3a8a;
+            border: none;
+            padding: 9px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 30px;
+        }
+
+        .top-title {
+            margin-bottom: 25px;
+        }
+
+        .top-title h1 {
+            color: #1e3a8a;
+            margin-bottom: 8px;
+        }
+
+        .top-title p {
+            color: #64748b;
+        }
+
+        .form-box,
+        .items-box,
+        .match-box {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+            margin-bottom: 25px;
+        }
+
+        .form-box h2,
+        .items-box h2,
+        .match-box h2 {
+            color: #1e3a8a;
+            margin-bottom: 18px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            margin-bottom: 7px;
+            font-weight: bold;
+            color: #374151;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            border-color: #2563eb;
+        }
+
+        .submit-btn {
+            margin-top: 18px;
+            padding: 13px 20px;
+            background: #1e3a8a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .submit-btn:hover {
+            background: #172f73;
+        }
+
+        .submit-btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+            gap: 18px;
+        }
+
+        .item-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 18px;
+            background: #fafcff;
+        }
+
+        .item-card h3 {
+            color: #1e3a8a;
+            margin-bottom: 10px;
+        }
+
+        .item-row {
+            margin: 7px 0;
+            line-height: 1.5;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .lost {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .found {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .open {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .match-card {
+            border: 2px solid #c7d2fe;
+            background: #eef2ff;
+            border-radius: 12px;
+            padding: 18px;
+            margin-top: 15px;
+        }
+
+        .match-score {
+            font-size: 22px;
+            font-weight: bold;
+            color: #1e3a8a;
+            margin-bottom: 10px;
+        }
+
+        .match-good {
+            border-color: #86efac;
+            background: #f0fdf4;
+        }
+
+        .match-medium {
+            border-color: #fde68a;
+            background: #fffbeb;
+        }
+
+        .match-low {
+            border-color: #fecaca;
+            background: #fef2f2;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .success-message {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .info-message {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .empty {
+            color: #64748b;
+            padding: 15px 0;
+        }
+
+        @media (max-width: 700px) {
+
+            .header {
+                padding: 15px 20px;
+            }
+
+            .logo {
+                font-size: 19px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .field.full {
+                grid-column: auto;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="header">
+
+        <div class="logo">
+            🎓 Smart Campus AI
+        </div>
+
+        <button
+            class="back-btn"
+            onclick="goHome()"
+        >
+            🏠 Dashboard
+        </button>
+
+    </div>
+
+
+    <div class="container">
+
+        <div class="top-title">
+
+            <h1>
+                🔎 Smart Lost & Found
+            </h1>
+
+            <p>
+                Report a lost or found item and let Smart Campus AI
+                find possible matches automatically.
+            </p>
+
+        </div>
+
+
+        <div
+            id="message"
+            class="message"
+        ></div>
+
+
+        <!-- FORM -->
+
+        <div class="form-box">
+
+            <h2>
+                ➕ Report Lost / Found Item
+            </h2>
+
+            <div class="form-grid">
+
+                <div class="field">
+
+                    <label>
+                        Item Title
+                    </label>
+
+                    <input
+                        id="title"
+                        type="text"
+                        placeholder="Example: Black Wallet"
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Item Type
+                    </label>
+
+                    <select id="itemType">
+
+                        <option value="LOST">
+                            LOST
+                        </option>
+
+                        <option value="FOUND">
+                            FOUND
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="field full">
+
+                    <label>
+                        Description
+                    </label>
+
+                    <textarea
+                        id="description"
+                        placeholder="Describe the item, color, brand, special marks, etc."
+                    ></textarea>
+
+                </div>
+
+
+                <div class="field full">
+
+                    <label>
+                        Location
+                    </label>
+
+                    <input
+                        id="location"
+                        type="text"
+                        placeholder="Example: Central Library"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <button
+                id="submitBtn"
+                class="submit-btn"
+                onclick="submitItem()"
+            >
+                🔎 Submit Item
+            </button>
+
+        </div>
+
+
+        <!-- AI MATCH RESULT -->
+
+        <div
+            id="matchBox"
+            class="match-box"
+            style="display:none;"
+        >
+
+            <h2>
+                🤖 AI Matching Result
+            </h2>
+
+            <div id="matchContainer"></div>
+
+        </div>
+
+
+        <!-- ALL ITEMS -->
+
+        <div class="items-box">
+
+            <h2>
+                📋 Lost & Found Items
+            </h2>
+
+            <div
+                id="itemsContainer"
+                class="items-grid"
+            >
+                Loading items...
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        let currentUser = null;
+
+
+        /* =====================================
+           HOME
+        ===================================== */
+
+        function goHome() {
+
+            window.location.href =
+                "index.html";
+
+        }
+
+
+        /* =====================================
+           MESSAGE
+        ===================================== */
+
+        function showMessage(
+            text,
+            type
+        ) {
+
+            const box =
+                document.getElementById(
+                    "message"
+                );
+
+            box.innerText =
+                text;
+
+            box.className =
+                "message " + type;
+
+            box.style.display =
+                "block";
+
+
+            setTimeout(
+                () => {
+
+                    box.style.display =
+                        "none";
+
+                },
+                4000
+            );
+
+        }
+
+
+        /* =====================================
+           GET USER
+        ===================================== */
+
+        async function getCurrentUser() {
+
+            try {
+
+                const {
+                    data,
+                    error
+                } =
+                    await supabaseClient
+                        .auth
+                        .getUser();
+
+
+                if (
+                    !error &&
+                    data?.user
+                ) {
+
+                    currentUser =
+                        data.user;
+
+                }
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "User Error:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        /* =====================================
+           NORMALIZE TEXT
+        ===================================== */
+
+        function normalizeText(
+            text
+        ) {
+
+            return String(
+                text || ""
+            )
+                .toLowerCase()
+                .replace(
+                    /[^a-z0-9\s]/g,
+                    " "
+                )
+                .split(/\s+/)
+                .filter(
+                    word =>
+                        word.length > 2
+                );
+
+        }
+
+
+        /* =====================================
+           UNIQUE WORDS
+        ===================================== */
+
+        function uniqueWords(
+            words
+        ) {
+
+            return [
+                ...new Set(words)
+            ];
+
+        }
+
+
+        /* =====================================
+           SMART MATCH SCORE
+        ===================================== */
+
+        function calculateMatchScore(
+            lostItem,
+            foundItem
+        ) {
+
+            const lostTitle =
+                normalizeText(
+                    lostItem.title
+                );
+
+            const foundTitle =
+                normalizeText(
+                    foundItem.title
+                );
+
+
+            const lostDescription =
+                normalizeText(
+                    lostItem.description
+                );
+
+            const foundDescription =
+                normalizeText(
+                    foundItem.description
+                );
+
+
+            const lostLocation =
+                normalizeText(
+                    lostItem.location
+                );
+
+            const foundLocation =
+                normalizeText(
+                    foundItem.location
+                );
+
+
+            const lostWords =
+                uniqueWords(
+                    lostTitle.concat(
+                        lostDescription
+                    )
+                );
+
+
+            const foundWords =
+                uniqueWords(
+                    foundTitle.concat(
+                        foundDescription
+                    )
+                );
+
+
+            let commonWords = 0;
+
+
+            lostWords.forEach(
+                word => {
+
+                    if (
+                        foundWords.includes(word)
+                    ) {
+
+                        commonWords++;
+
+                    }
+
+                }
+            );
+
+
+            let score = 0;
+
+
+            /*
+             * TITLE MATCH
+             */
+
+            const titleMatches =
+                lostTitle.filter(
+                    word =>
+                        foundTitle.includes(word)
+                ).length;
+
+
+            if (titleMatches > 0) {
+
+                score += 35;
+
+            }
+
+
+            /*
+             * DESCRIPTION MATCH
+             */
+
+            if (
+                lostWords.length > 0 &&
+                foundWords.length > 0
+            ) {
+
+                const descriptionScore =
+                    commonWords /
+                    Math.max(
+                        lostWords.length,
+                        foundWords.length
+                    );
+
+
+                score +=
+                    Math.min(
+                        descriptionScore * 35,
+                        35
+                    );
+
+            }
+
+
+            /*
+             * LOCATION MATCH
+             */
+
+            const locationMatch =
+                lostLocation.length > 0 &&
+                foundLocation.length > 0 &&
+                lostLocation.some(
+                    word =>
+                        foundLocation.includes(word)
+                );
+
+
+            if (locationMatch) {
+
+                score += 20;
+
+            }
+
+
+            /*
+             * ITEM TYPE CONTEXT
+             */
+
+            const lostTitleText =
+                String(
+                    lostItem.title || ""
+                ).toLowerCase();
+
+
+            const foundTitleText =
+                String(
+                    foundItem.title || ""
+                ).toLowerCase();
+
+
+            if (
+                lostTitleText &&
+                foundTitleText
+            ) {
+
+                const firstLostWord =
+                    normalizeText(
+                        lostTitleText
+                    )[0];
+
+                const firstFoundWord =
+                    normalizeText(
+                        foundTitleText
+                    )[0];
+
+
+                if (
+                    firstLostWord &&
+                    firstFoundWord &&
+                    firstLostWord === firstFoundWord
+                ) {
+
+                    score += 10;
+
+                }
+
+            }
+
+
+            return Math.min(
+                Math.round(score),
+                100
+            );
+
+        }
+
+
+        /* =====================================
+           FIND MATCHES
+        ===================================== */
+
+        function findMatches(
+            lostItem,
+            allItems
+        ) {
+
+            const foundItems =
+                allItems.filter(
+                    item =>
+                        String(
+                            item.item_type
+                        ).toUpperCase() ===
+                        "FOUND"
+                );
+
+
+            const matches =
+                foundItems
+                    .map(
+                        foundItem => {
+
+                            return {
+
+                                item:
+                                    foundItem,
+
+                                score:
+                                    calculateMatchScore(
+                                        lostItem,
+                                        foundItem
+                                    )
+
+                            };
+
+                        }
+                    )
+                    .filter(
+                        match =>
+                            match.score >= 25
+                    )
+                    .sort(
+                        (a, b) =>
+                            b.score -
+                            a.score
+                    );
+
+
+            return matches.slice(
+                0,
+                3
+            );
+
+        }
+
+
+        /* =====================================
+           SHOW MATCHES
+        ===================================== */
+
+        function showMatches(
+            lostItem,
+            matches
+        ) {
+
+            const box =
+                document.getElementById(
+                    "matchBox"
+                );
+
+            const container =
+                document.getElementById(
+                    "matchContainer"
+                );
+
+
+            box.style.display =
+                "block";
+
+
+            if (
+                !matches ||
+                matches.length === 0
+            ) {
+
+                container.innerHTML = `
+
+                    <div class="match-card match-low">
+
+                        <div class="match-score">
+                            🔍 No strong match found
+                        </div>
+
+                        <p>
+                            Your lost item has been saved.
+                            AI will compare it with future
+                            found items too.
+                        </p>
+
+                    </div>
+
+                `;
+
+                return;
+
+            }
+
+
+            let html = "";
+
+
+            matches.forEach(
+                match => {
+
+                    let matchClass =
+                        "match-low";
+
+
+                    if (
+                        match.score >= 70
+                    ) {
+
+                        matchClass =
+                            "match-good";
+
+                    }
+
+                    else if (
+                        match.score >= 45
+                    ) {
+
+                        matchClass =
+                            "match-medium";
+
+                    }
+
+
+                    html += `
+
+                        <div
+                            class="match-card ${matchClass}"
+                        >
+
+                            <div class="match-score">
+
+                                🤖 Match Score:
+                                ${match.score}%
+
+                            </div>
+
+                            <div class="item-row">
+                                <b>Item:</b>
+                                ${escapeHTML(
+                                    match.item.title
+                                )}
+                            </div>
+
+                            <div class="item-row">
+                                <b>Description:</b>
+                                ${escapeHTML(
+                                    match.item.description ||
+                                    "-"
+                                )}
+                            </div>
+
+                            <div class="item-row">
+                                <b>Location:</b>
+                                ${escapeHTML(
+                                    match.item.location ||
+                                    "-"
+                                )}
+                            </div>
+
+                            <div class="item-row">
+
+                                <span class="badge found">
+                                    FOUND
+                                </span>
+
+                            </div>
+
+                            ${
+                                match.score >= 70
+                                    ? `
+                                    <p
+                                        style="
+                                            margin-top:12px;
+                                            color:#166534;
+                                            font-weight:bold;
+                                        "
+                                    >
+                                        ✅ Strong possible match!
+                                        Please verify the item details.
+                                    </p>
+                                    `
+                                    : ""
+                            }
+
+                        </div>
+
+                    `;
+
+                }
+            );
+
+
+            container.innerHTML =
+                html;
+
+        }
+
+
+        /* =====================================
+           SUBMIT ITEM
+        ===================================== */
+
+        async function submitItem() {
+
+            const title =
+                document
+                    .getElementById("title")
+                    .value
+                    .trim();
+
+
+            const description =
+                document
+                    .getElementById("description")
+                    .value
+                    .trim();
+
+
+            const location =
+                document
+                    .getElementById("location")
+                    .value
+                    .trim();
+
+
+            const itemType =
+                document
+                    .getElementById("itemType")
+                    .value;
+
+
+            const submitBtn =
+                document.getElementById(
+                    "submitBtn"
+                );
+
+
+            if (!title) {
+
+                showMessage(
+                    "❌ Please enter item title.",
+                    "error-message"
+                );
+
+                return;
+
+            }
+
+
+            if (!description) {
+
+                showMessage(
+                    "❌ Please enter item description.",
+                    "error-message"
+                );
+
+                return;
+
+            }
+
+
+            if (!location) {
+
+                showMessage(
+                    "❌ Please enter location.",
+                    "error-message"
+                );
+
+                return;
+
+            }
+
+
+            submitBtn.disabled =
+                true;
+
+            submitBtn.innerText =
+                "⏳ Saving and finding matches...";
+
+
+            try {
+
+                if (!currentUser) {
+
+                    await getCurrentUser();
+
+                }
+
+
+                const {
+                    data: existingItems,
+                    error: fetchError
+                } =
+                    await supabaseClient
+                        .from("lost_found")
+                        .select("*");
+
+
+                if (fetchError) {
+
+                    throw fetchError;
+
+                }
+
+
+                const {
+                    data: insertedItems,
+                    error: insertError
+                } =
+                    await supabaseClient
+                        .from("lost_found")
+                        .insert({
+
+                            user_id:
+                                currentUser
+                                    ? currentUser.id
+                                    : null,
+
+                            title:
+                                title,
+
+                            description:
+                                description,
+
+                            item_type:
+                                itemType,
+
+                            location:
+                                location,
+
+                            status:
+                                "OPEN"
+
+                        })
+                        .select();
+
+
+                if (insertError) {
+
+                    throw insertError;
+
+                }
+
+
+                const newItem =
+                    insertedItems?.[0] || {
+
+                        title:
+                            title,
+
+                        description:
+                            description,
+
+                        item_type:
+                            itemType,
+
+                        location:
+                            location
+
+                    };
+
+
+                showMessage(
+                    "✅ Item saved successfully!",
+                    "success-message"
+                );
+
+
+                document.getElementById(
+                    "title"
+                ).value = "";
+
+
+                document.getElementById(
+                    "description"
+                ).value = "";
+
+
+                document.getElementById(
+                    "location"
+                ).value = "";
+
+
+                /*
+                 * LOST ITEM:
+                 * FIND FOUND MATCHES
+                 */
+
+                if (
+                    itemType.toUpperCase() ===
+                    "LOST"
+                ) {
+
+                    const matches =
+                        findMatches(
+                            newItem,
+                            existingItems || []
+                        );
+
+
+                    showMatches(
+                        newItem,
+                        matches
+                    );
+
+                }
+
+                else {
+
+                    const lostItems =
+                        (
+                            existingItems || []
+                        ).filter(
+                            item =>
+                                String(
+                                    item.item_type
+                                ).toUpperCase() ===
+                                "LOST"
+                        );
+
+
+                    const matches =
+                        lostItems
+                            .map(
+                                lostItem => {
+
+                                    return {
+
+                                        item:
+                                            lostItem,
+
+                                        score:
+                                            calculateMatchScore(
+                                                lostItem,
+                                                newItem
+                                            )
+
+                                    };
+
+                                }
+                            )
+                            .filter(
+                                match =>
+                                    match.score >= 25
+                            )
+                            .sort(
+                                (a, b) =>
+                                    b.score -
+                                    a.score
+                            )
+                            .slice(
+                                0,
+                                3
+                            );
+
+
+                    showMatches(
+                        newItem,
+                        matches
+                    );
+
+                }
+
+
+                await loadItems();
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Lost & Found Error:",
+                    error
+                );
+
+
+                showMessage(
+                    "❌ Failed to save item: " +
+                    error.message,
+                    "error-message"
+                );
+
+            }
+
+            finally {
+
+                submitBtn.disabled =
+                    false;
+
+                submitBtn.innerText =
+                    "🔎 Submit Item";
+
+            }
+
+        }
+
+
+        /* =====================================
+           LOAD ITEMS
+        ===================================== */
+
+        async function loadItems() {
+
+            const container =
+                document.getElementById(
+                    "itemsContainer"
+                );
+
+
+            container.innerHTML =
+                "Loading items...";
+
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from("lost_found")
+                    .select("*")
+                    .order(
+                        "created_at",
+                        {
+                            ascending: false
+                        }
+                    );
+
+
+            if (error) {
+
+                console.error(
+                    "Load Error:",
+                    error
+                );
+
+
+                container.innerHTML =
+                    `<p class="empty">
+                        ❌ Failed to load items:
+                        ${escapeHTML(
+                            error.message
+                        )}
+                    </p>`;
+
+                return;
+
+            }
+
+
+            if (
+                !data ||
+                data.length === 0
+            ) {
+
+                container.innerHTML =
+                    `<p class="empty">
+                        No lost or found items available.
+                    </p>`;
+
+                return;
+
+            }
+
+
+            let html = "";
+
+
+            data.forEach(
+                item => {
+
+                    const type =
+                        String(
+                            item.item_type || ""
+                        ).toUpperCase();
+
+
+                    const badgeClass =
+                        type === "FOUND"
+                            ? "found"
+                            : "lost";
+
+
+                    html += `
+
+                        <div class="item-card">
+
+                            <h3>
+                                ${escapeHTML(
+                                    item.title
+                                )}
+                            </h3>
+
+                            <div class="item-row">
+
+                                <span class="badge ${badgeClass}">
+                                    ${escapeHTML(
+                                        type || "ITEM"
+                                    )}
+                                </span>
+
+                            </div>
+
+                            <div class="item-row">
+
+                                <b>Description:</b>
+
+                                ${escapeHTML(
+                                    item.description ||
+                                    "-"
+                                )}
+
+                            </div>
+
+                            <div class="item-row">
+
+                                <b>Location:</b>
+
+                                ${escapeHTML(
+                                    item.location ||
+                                    "-"
+                                )}
+
+                            </div>
+
+                            <div class="item-row">
+
+                                <span class="badge open">
+                                    ${escapeHTML(
+                                        item.status ||
+                                        "OPEN"
+                                    )}
+                                </span>
+
+                            </div>
+
+                            <div
+                                class="item-row"
+                                style="
+                                    color:#64748b;
+                                    font-size:13px;
+                                "
+                            >
+
+                                ${formatDate(
+                                    item.created_at
+                                )}
+
+                            </div>
+
+                        </div>
+
+                    `;
+
+                }
+            );
+
+
+            container.innerHTML =
+                html;
+
+        }
+
+
+        /* =====================================
+           DATE
+        ===================================== */
+
+        function formatDate(
+            date
+        ) {
+
+            if (!date) {
+                return "-";
+            }
+
+            return new Date(
+                date
+            ).toLocaleString();
+
+        }
+
+
+        /* =====================================
+           ESCAPE HTML
+        ===================================== */
+
+        function escapeHTML(
+            text
+        ) {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+            div.textContent =
+                text ?? "";
+
+            return div.innerHTML;
+
+        }
+
+
+        /* =====================================
+           START
+        ===================================== */
+
+        getCurrentUser();
+
+        loadItems();
+
+    </script>
+
+</body>
+
+</html>

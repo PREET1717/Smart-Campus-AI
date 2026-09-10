@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Smart Campus AI - My Complaints</title>
+
+    <!-- SUPABASE -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="config.js"></script>
+    <script src="supabase.js"></script>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+        .header {
+            background: #1e3a8a;
+            color: white;
+            padding: 18px 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .back-btn {
+            background: white;
+            color: #1e3a8a;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 30px 20px;
+        }
+
+        .title {
+            margin-bottom: 25px;
+        }
+
+        .title h1 {
+            color: #1e3a8a;
+            margin-bottom: 8px;
+        }
+
+        .title p {
+            color: #64748b;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            text-align: center;
+        }
+
+        .card h3 {
+            color: #64748b;
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+
+        .number {
+            font-size: 30px;
+            font-weight: bold;
+            color: #1e3a8a;
+        }
+
+        .complaints-box {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+
+        .top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .top-row h2 {
+            color: #1e293b;
+        }
+
+        .refresh {
+            padding: 10px 15px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .search-box:focus {
+            border-color: #2563eb;
+        }
+
+        .complaint-list {
+            display: grid;
+            gap: 18px;
+        }
+
+        .complaint-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            background: #fafcff;
+        }
+
+        .complaint-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .complaint-text {
+            font-size: 17px;
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .info-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .info-item small {
+            display: block;
+            color: #64748b;
+            margin-bottom: 5px;
+        }
+
+        .info-item strong {
+            color: #334155;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .progress {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .resolved {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .priority-high {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        .priority-medium {
+            color: #d97706;
+            font-weight: bold;
+        }
+
+        .priority-low {
+            color: #16a34a;
+            font-weight: bold;
+        }
+
+        .date {
+            margin-top: 15px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: #64748b;
+        }
+
+        .error {
+            color: #991b1b;
+            background: #fee2e2;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 900px) {
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .info-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .header {
+                padding: 15px 20px;
+            }
+
+            .logo {
+                font-size: 19px;
+            }
+
+            .container {
+                padding: 20px 15px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .top-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="header">
+
+        <div class="logo">
+            🎓 Smart Campus AI
+        </div>
+
+        <button
+            class="back-btn"
+            onclick="goHome()"
+        >
+            🏠 Dashboard
+        </button>
+
+    </div>
+
+
+    <div class="container">
+
+        <div class="title">
+
+            <h1>
+                📝 My Complaints
+            </h1>
+
+            <p>
+                Track your submitted complaints and their current status.
+            </p>
+
+        </div>
+
+
+        <!-- STATS -->
+
+        <div class="stats">
+
+            <div class="card">
+
+                <h3>
+                    Total
+                </h3>
+
+                <div
+                    class="number"
+                    id="totalCount"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    Pending
+                </h3>
+
+                <div
+                    class="number"
+                    id="pendingCount"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    In Progress
+                </h3>
+
+                <div
+                    class="number"
+                    id="progressCount"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    Resolved
+                </h3>
+
+                <div
+                    class="number"
+                    id="resolvedCount"
+                >
+                    0
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- COMPLAINTS -->
+
+        <div class="complaints-box">
+
+            <div class="top-row">
+
+                <h2>
+                    📋 Complaint History
+                </h2>
+
+                <button
+                    class="refresh"
+                    onclick="loadComplaints()"
+                >
+                    🔄 Refresh
+                </button>
+
+            </div>
+
+
+            <input
+                type="text"
+                id="searchBox"
+                class="search-box"
+                placeholder="🔍 Search your complaints..."
+                oninput="filterComplaints()"
+            >
+
+
+            <div
+                id="complaintList"
+                class="complaint-list"
+            >
+                Loading complaints...
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        let allComplaints = [];
+
+        let currentUser = null;
+
+
+        /* =====================================
+           HOME
+        ===================================== */
+
+        function goHome() {
+
+            window.location.href =
+                "index.html";
+
+        }
+
+
+        /* =====================================
+           GET USER
+        ===================================== */
+
+        async function getCurrentUser() {
+
+            try {
+
+                const {
+                    data,
+                    error
+                } =
+                    await supabaseClient
+                        .auth
+                        .getUser();
+
+
+                if (
+                    error ||
+                    !data?.user
+                ) {
+
+                    window.location.href =
+                        "auth.html";
+
+                    return false;
+
+                }
+
+
+                currentUser =
+                    data.user;
+
+                return true;
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "User Error:",
+                    error
+                );
+
+                window.location.href =
+                    "auth.html";
+
+                return false;
+
+            }
+
+        }
+
+
+        /* =====================================
+           LOAD COMPLAINTS
+        ===================================== */
+
+        async function loadComplaints() {
+
+            const container =
+                document.getElementById(
+                    "complaintList"
+                );
+
+
+            container.innerHTML =
+                "⏳ Loading complaints...";
+
+
+            try {
+
+                if (!currentUser) {
+
+                    const loggedIn =
+                        await getCurrentUser();
+
+
+                    if (!loggedIn) {
+                        return;
+                    }
+
+                }
+
+
+                const {
+                    data,
+                    error
+                } =
+                    await supabaseClient
+                        .from("complaints")
+                        .select("*")
+                        .eq(
+                            "user_id",
+                            currentUser.id
+                        )
+                        .order(
+                            "created_at",
+                            {
+                                ascending:
+                                    false
+                            }
+                        );
+
+
+                if (error) {
+
+                    console.error(
+                        "Complaint Error:",
+                        error
+                    );
+
+                    container.innerHTML = `
+                        <div class="error">
+                            ❌ Failed to load complaints.
+                            <br><br>
+                            ${escapeHTML(
+                                error.message
+                            )}
+                        </div>
+                    `;
+
+                    return;
+
+                }
+
+
+                allComplaints =
+                    data || [];
+
+
+                updateStats(
+                    allComplaints
+                );
+
+
+                renderComplaints(
+                    allComplaints
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Load Error:",
+                    error
+                );
+
+                container.innerHTML = `
+                    <div class="error">
+                        ❌ Something went wrong.
+                    </div>
+                `;
+
+            }
+
+        }
+
+
+        /* =====================================
+           UPDATE STATS
+        ===================================== */
+
+        function updateStats(
+            complaints
+        ) {
+
+            const pending =
+                complaints.filter(
+                    complaint =>
+                        String(
+                            complaint.status
+                        ).toUpperCase() ===
+                        "PENDING"
+                ).length;
+
+
+            const progress =
+                complaints.filter(
+                    complaint =>
+                        String(
+                            complaint.status
+                        ).toUpperCase() ===
+                        "IN_PROGRESS"
+                ).length;
+
+
+            const resolved =
+                complaints.filter(
+                    complaint =>
+                        String(
+                            complaint.status
+                        ).toUpperCase() ===
+                        "RESOLVED"
+                ).length;
+
+
+            document.getElementById(
+                "totalCount"
+            ).innerText =
+                complaints.length;
+
+
+            document.getElementById(
+                "pendingCount"
+            ).innerText =
+                pending;
+
+
+            document.getElementById(
+                "progressCount"
+            ).innerText =
+                progress;
+
+
+            document.getElementById(
+                "resolvedCount"
+            ).innerText =
+                resolved;
+
+        }
+
+
+        /* =====================================
+           FILTER
+        ===================================== */
+
+        function filterComplaints() {
+
+            const search =
+                document.getElementById(
+                    "searchBox"
+                ).value
+                .toLowerCase()
+                .trim();
+
+
+            const filtered =
+                allComplaints.filter(
+                    complaint => {
+
+                        const text =
+                            String(
+                                complaint.complaint_text ||
+                                ""
+                            ).toLowerCase();
+
+
+                        const category =
+                            String(
+                                complaint.category ||
+                                ""
+                            ).toLowerCase();
+
+
+                        const department =
+                            String(
+                                complaint.department ||
+                                ""
+                            ).toLowerCase();
+
+
+                        return (
+                            text.includes(search) ||
+                            category.includes(search) ||
+                            department.includes(search)
+                        );
+
+                    }
+                );
+
+
+            renderComplaints(
+                filtered
+            );
+
+        }
+
+
+        /* =====================================
+           RENDER
+        ===================================== */
+
+        function renderComplaints(
+            complaints
+        ) {
+
+            const container =
+                document.getElementById(
+                    "complaintList"
+                );
+
+
+            if (
+                !complaints ||
+                complaints.length === 0
+            ) {
+
+                container.innerHTML = `
+                    <div class="empty">
+                        📝 No complaints found.
+                    </div>
+                `;
+
+                return;
+
+            }
+
+
+            let html = "";
+
+
+            complaints.forEach(
+                complaint => {
+
+                    const status =
+                        String(
+                            complaint.status ||
+                            "PENDING"
+                        ).toUpperCase();
+
+
+                    let statusClass =
+                        "pending";
+
+
+                    let statusText =
+                        "PENDING";
+
+
+                    if (
+                        status === "IN_PROGRESS"
+                    ) {
+
+                        statusClass =
+                            "progress";
+
+                        statusText =
+                            "IN PROGRESS";
+
+                    }
+
+                    else if (
+                        status === "RESOLVED"
+                    ) {
+
+                        statusClass =
+                            "resolved";
+
+                        statusText =
+                            "RESOLVED";
+
+                    }
+
+
+                    const priority =
+                        String(
+                            complaint.priority ||
+                            ""
+                        ).toUpperCase();
+
+
+                    let priorityClass =
+                        "priority-medium";
+
+
+                    if (
+                        priority === "HIGH"
+                    ) {
+
+                        priorityClass =
+                            "priority-high";
+
+                    }
+
+                    else if (
+                        priority === "LOW"
+                    ) {
+
+                        priorityClass =
+                            "priority-low";
+
+                    }
+
+
+                    html += `
+
+                        <div
+                            class="complaint-card"
+                        >
+
+                            <div class="complaint-text">
+
+                                ${escapeHTML(
+                                    complaint.complaint_text
+                                )}
+
+                            </div>
+
+
+                            <span
+                                class="badge ${statusClass}"
+                            >
+                                ${statusText}
+                            </span>
+
+
+                            <div class="info-grid">
+
+                                <div class="info-item">
+
+                                    <small>
+                                        Category
+                                    </small>
+
+                                    <strong>
+                                        ${escapeHTML(
+                                            complaint.category ||
+                                            "-"
+                                        )}
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="info-item">
+
+                                    <small>
+                                        Priority
+                                    </small>
+
+                                    <strong
+                                        class="${priorityClass}"
+                                    >
+                                        ${escapeHTML(
+                                            complaint.priority ||
+                                            "-"
+                                        )}
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="info-item">
+
+                                    <small>
+                                        Department
+                                    </small>
+
+                                    <strong>
+                                        ${escapeHTML(
+                                            complaint.department ||
+                                            "-"
+                                        )}
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="info-item">
+
+                                    <small>
+                                        Status
+                                    </small>
+
+                                    <strong>
+                                        ${statusText}
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="date">
+
+                                🕒 Submitted:
+                                ${formatDate(
+                                    complaint.created_at
+                                )}
+
+                            </div>
+
+                        </div>
+
+                    `;
+
+                }
+            );
+
+
+            container.innerHTML =
+                html;
+
+        }
+
+
+        /* =====================================
+           DATE
+        ===================================== */
+
+        function formatDate(
+            date
+        ) {
+
+            if (!date) {
+                return "-";
+            }
+
+
+            return new Date(
+                date
+            ).toLocaleString();
+
+        }
+
+
+        /* =====================================
+           ESCAPE HTML
+        ===================================== */
+
+        function escapeHTML(
+            text
+        ) {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+            div.textContent =
+                text ?? "";
+
+            return div.innerHTML;
+
+        }
+
+
+        /* =====================================
+           START
+        ===================================== */
+
+        getCurrentUser().then(
+            success => {
+
+                if (success) {
+
+                    loadComplaints();
+
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>
