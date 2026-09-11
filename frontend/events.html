@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Smart Campus AI - Events</title>
+
+    <!-- SUPABASE -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="config.js"></script>
+    <script src="supabase.js"></script>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+
+        .header {
+            background: #1e3a8a;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0 0 8px;
+        }
+
+        .header p {
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .section h2 {
+            margin-top: 0;
+            color: #1e3a8a;
+        }
+
+        .event {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 15px;
+            background: white;
+        }
+
+        .event:last-child {
+            margin-bottom: 0;
+        }
+
+        .event h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #111827;
+        }
+
+        .event p {
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .date {
+            color: #1e3a8a;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .location {
+            color: #374151;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .empty {
+            text-align: center;
+            color: #777;
+            padding: 30px;
+        }
+
+        .error {
+            text-align: center;
+            color: #dc2626;
+            padding: 20px;
+        }
+
+        .back {
+            display: block;
+            text-align: center;
+            margin-top: 25px;
+            color: #1e3a8a;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <div class="header">
+
+        <h1>
+            📅 Upcoming Events
+        </h1>
+
+        <p>
+            Smart Campus AI
+        </p>
+
+    </div>
+
+
+    <div class="container">
+
+        <div class="section">
+
+            <h2>
+                📅 Campus Events
+            </h2>
+
+            <div id="events">
+                ⏳ Loading events...
+            </div>
+
+        </div>
+
+
+        <a
+            href="index.html"
+            class="back"
+        >
+            ← Back to Dashboard
+        </a>
+
+    </div>
+
+
+    <script>
+
+
+        // ==========================================
+        // LOAD EVENTS
+        // ==========================================
+
+        async function loadEvents() {
+
+            const box =
+                document.getElementById(
+                    "events"
+                );
+
+
+            box.innerHTML =
+                "⏳ Loading events...";
+
+
+            if (!window.supabaseClient) {
+
+                box.innerHTML = `
+                    <div class="error">
+                        ❌ Supabase is not connected.
+                    </div>
+                `;
+
+                return;
+            }
+
+
+            try {
+
+                const {
+                    data,
+                    error
+                } =
+                    await window.supabaseClient
+                        .from("events")
+                        .select("*")
+                        .order(
+                            "event_date",
+                            {
+                                ascending: true
+                            }
+                        );
+
+
+                if (error) {
+
+                    console.error(
+                        "Events Error:",
+                        error
+                    );
+
+
+                    box.innerHTML = `
+                        <div class="error">
+                            ❌ Failed to load events.
+                            <br><br>
+                            ${error.message}
+                        </div>
+                    `;
+
+                    return;
+                }
+
+
+                if (
+                    !data ||
+                    data.length === 0
+                ) {
+
+                    box.innerHTML = `
+                        <div class="empty">
+                            📅 No upcoming events available.
+                        </div>
+                    `;
+
+                    return;
+                }
+
+
+                box.innerHTML =
+                    "";
+
+
+                data.forEach(
+                    event => {
+
+                        const div =
+                            document.createElement(
+                                "div"
+                            );
+
+
+                        div.className =
+                            "event";
+
+
+                        let date =
+                            "Date not available";
+
+
+                        if (
+                            event.event_date
+                        ) {
+
+                            const parsedDate =
+                                new Date(
+                                    event.event_date
+                                );
+
+
+                            if (
+                                !isNaN(
+                                    parsedDate.getTime()
+                                )
+                            ) {
+
+                                date =
+                                    parsedDate.toLocaleString();
+
+                            }
+
+                        }
+
+
+                        div.innerHTML = `
+
+                            <h3>
+                                🎯 ${escapeHTML(
+                                    event.title ||
+                                    "Untitled Event"
+                                )}
+                            </h3>
+
+                            <p>
+                                ${
+                                    escapeHTML(
+                                        event.description ||
+                                        "No description available."
+                                    )
+                                }
+                            </p>
+
+                            <div class="date">
+                                📅 Date:
+                                ${escapeHTML(date)}
+                            </div>
+
+                            <div class="location">
+                                📍 Location:
+                                ${escapeHTML(
+                                    event.location ||
+                                    "Not specified"
+                                )}
+                            </div>
+
+                        `;
+
+
+                        box.appendChild(
+                            div
+                        );
+
+                    }
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Unexpected Events Error:",
+                    error
+                );
+
+
+                box.innerHTML = `
+                    <div class="error">
+                        ❌ Unable to load events.
+                    </div>
+                `;
+
+            }
+
+        }
+
+
+        // ==========================================
+        // ESCAPE HTML
+        // ==========================================
+
+        function escapeHTML(
+            text
+        ) {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+
+            div.textContent =
+                text ?? "";
+
+
+            return div.innerHTML;
+
+        }
+
+
+        // ==========================================
+        // PAGE LOAD
+        // ==========================================
+
+        window.addEventListener(
+            "load",
+            loadEvents
+        );
+
+    </script>
+
+</body>
+
+</html>
