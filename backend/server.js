@@ -1,7 +1,6 @@
 require("dotenv").config();
 
 const express = require("express");
-const cors = require("cors");
 
 const assistantRoutes = require("./routes/assistantRoutes");
 
@@ -14,13 +13,41 @@ const PORT = process.env.PORT || 5000;
 // MIDDLEWARE
 // ==========================================
 
-app.use(cors());
-
 app.use(express.json());
 
 
 // ==========================================
-// AI CAMPUS ASSISTANT ROUTE
+// MANUAL CORS
+// ==========================================
+
+app.use((req, res, next) => {
+
+    res.header(
+        "Access-Control-Allow-Origin",
+        "*"
+    );
+
+    res.header(
+        "Access-Control-Allow-Headers",
+        "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+    );
+
+    res.header(
+        "Access-Control-Allow-Methods",
+        "GET, POST, PUT, DELETE, OPTIONS"
+    );
+
+    if (req.method === "OPTIONS") {
+        return res.sendStatus(200);
+    }
+
+    next();
+
+});
+
+
+// ==========================================
+// AI CAMPUS ASSISTANT
 // ==========================================
 
 app.use(
@@ -132,12 +159,11 @@ app.post("/api/predict", async (req, res) => {
 
 app.listen(
     PORT,
+    "0.0.0.0",
     () => {
 
         console.log(
-
-            `Smart Campus AI server running on http://localhost:${PORT}`
-
+            `Smart Campus AI server running on port ${PORT}`
         );
 
     }
