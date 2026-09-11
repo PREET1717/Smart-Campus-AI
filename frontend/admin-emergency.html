@@ -1,10 +1,8 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
 
-```
 <meta charset="UTF-8">
 
 <meta
@@ -15,520 +13,495 @@
 <title>Smart Campus AI - Security Dashboard</title>
 
 <!-- SUPABASE -->
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="config.js"></script>
-
 <script src="supabase.js"></script>
-
 
 <style>
 
-    * {
-        box-sizing: border-box;
-        font-family: Arial, sans-serif;
-    }
+* {
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
 
-    body {
-        margin: 0;
-        background: #f3f4f6;
-        color: #1f2937;
-    }
+body {
+    margin: 0;
+    background: #f3f4f6;
+    color: #1f2937;
+}
 
-    /* =================================
-       ACCESS
-    ================================= */
+/* =================================
+   ACCESS
+================================= */
 
-    #accessLoading {
+#accessLoading {
+    position: fixed;
+    inset: 0;
+    background: #f3f4f6;
 
-        position: fixed;
-        inset: 0;
-        background: #f3f4f6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
+    z-index: 9999;
+}
 
-        z-index: 9999;
-    }
+#dashboardContent {
+    display: none;
+}
 
-    #dashboardContent {
-        display: none;
-    }
+/* =================================
+   HEADER
+================================= */
 
-    /* =================================
-       HEADER
-    ================================= */
+.header {
+    background: #991b1b;
+    color: white;
 
-    .header {
+    padding: 20px 30px;
 
-        background: #991b1b;
-        color: white;
+    display: flex;
 
-        padding: 20px 30px;
+    justify-content: space-between;
 
-        display: flex;
+    align-items: center;
 
-        justify-content: space-between;
+    flex-wrap: wrap;
 
-        align-items: center;
+    gap: 15px;
+}
 
-        flex-wrap: wrap;
+.header-left h1 {
+    margin: 0;
+    font-size: 27px;
+}
 
-        gap: 15px;
-    }
+.header-left p {
+    margin: 8px 0 0;
+    opacity: 0.9;
+}
 
-    .header-left h1 {
+.logout {
+    padding: 10px 16px;
 
-        margin: 0;
+    border: none;
 
-        font-size: 27px;
-    }
+    border-radius: 8px;
 
-    .header-left p {
+    background: white;
 
-        margin: 8px 0 0;
+    color: #991b1b;
 
-        opacity: 0.9;
-    }
+    font-weight: bold;
 
-    .logout {
+    cursor: pointer;
+}
 
-        padding: 10px 16px;
+.logout:hover {
+    background: #fee2e2;
+}
 
-        border: none;
+/* =================================
+   CONTAINER
+================================= */
 
-        border-radius: 8px;
+.container {
+    max-width: 1250px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
 
-        background: white;
+.top {
+    display: flex;
 
-        color: #991b1b;
+    justify-content: space-between;
 
-        font-weight: bold;
+    align-items: center;
 
-        cursor: pointer;
-    }
+    margin-bottom: 20px;
 
-    .logout:hover {
-        background: #fee2e2;
-    }
+    gap: 15px;
 
-    /* =================================
-       CONTAINER
-    ================================= */
+    flex-wrap: wrap;
+}
 
-    .container {
+.top h2 {
+    margin: 0;
+    color: #1f2937;
+}
 
-        max-width: 1250px;
+.refresh {
+    padding: 10px 18px;
 
-        margin: 30px auto;
+    border: none;
 
-        padding: 0 20px;
-    }
+    border-radius: 8px;
 
-    .top {
+    background: #1e3a8a;
 
-        display: flex;
+    color: white;
 
-        justify-content: space-between;
+    cursor: pointer;
 
-        align-items: center;
+    font-weight: bold;
+}
 
-        margin-bottom: 20px;
+.refresh:hover {
+    background: #172f73;
+}
 
-        gap: 15px;
+/* =================================
+   STAT CARDS
+================================= */
 
-        flex-wrap: wrap;
-    }
+.cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
 
-    .top h2 {
+    gap: 20px;
 
-        margin: 0;
+    margin-bottom: 25px;
+}
 
-        color: #1f2937;
-    }
+.card {
+    background: white;
 
-    .refresh {
+    padding: 22px;
 
-        padding: 10px 18px;
+    border-radius: 12px;
 
-        border: none;
+    box-shadow:
+        0 4px 15px
+        rgba(0,0,0,0.08);
+}
 
-        border-radius: 8px;
+.card h3 {
+    margin: 0 0 10px;
 
-        background: #1e3a8a;
+    color: #64748b;
 
-        color: white;
+    font-size: 16px;
+}
 
-        cursor: pointer;
+.number {
+    font-size: 34px;
 
-        font-weight: bold;
-    }
+    font-weight: bold;
 
-    .refresh:hover {
-        background: #172f73;
-    }
+    color: #991b1b;
+}
 
-    /* =================================
-       STAT CARDS
-    ================================= */
+.active-number {
+    color: #dc2626;
+}
+
+.resolved-number {
+    color: #16a34a;
+}
+
+/* =================================
+   MESSAGE
+================================= */
+
+#message {
+    margin-bottom: 20px;
+
+    padding: 12px 15px;
+
+    border-radius: 8px;
+
+    font-weight: bold;
+
+    display: none;
+}
+
+.message-info {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.message-success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.message-error {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* =================================
+   FILTER
+================================= */
+
+.filter-box {
+    background: white;
+
+    padding: 20px;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 4px 15px
+        rgba(0,0,0,0.08);
+
+    margin-bottom: 25px;
+}
+
+.filter-box h3 {
+    margin-top: 0;
+    color: #334155;
+}
+
+.filters {
+    display: grid;
+
+    grid-template-columns: 2fr 1fr auto;
+
+    gap: 12px;
+}
+
+.filters input,
+.filters select {
+    width: 100%;
+
+    padding: 11px;
+
+    border:
+        1px solid #cbd5e1;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+
+    outline: none;
+}
+
+.filters input:focus,
+.filters select:focus {
+    border-color: #2563eb;
+}
+
+.clear-btn {
+    border: none;
+
+    border-radius: 8px;
+
+    background: #64748b;
+
+    color: white;
+
+    padding: 11px 16px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+}
+
+/* =================================
+   TABLE
+================================= */
+
+.table-box {
+    background: white;
+
+    border-radius: 12px;
+
+    padding: 20px;
+
+    overflow-x: auto;
+
+    box-shadow:
+        0 4px 15px
+        rgba(0,0,0,0.08);
+}
+
+.table-info {
+    margin-bottom: 15px;
+
+    color: #64748b;
+
+    font-size: 14px;
+}
+
+table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    min-width: 1100px;
+}
+
+th,
+td {
+    padding: 13px;
+
+    border-bottom:
+        1px solid #e5e7eb;
+
+    text-align: left;
+
+    vertical-align: top;
+}
+
+th {
+    background: #f8fafc;
+    color: #334155;
+}
+
+tr:hover td {
+    background: #f8fafc;
+}
+
+/* =================================
+   BADGES
+================================= */
+
+.badge {
+    display: inline-block;
+
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+
+    font-weight: bold;
+}
+
+.badge-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-active {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.badge-progress {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.badge-resolved {
+    background: #dcfce7;
+    color: #166534;
+}
+
+/* =================================
+   BUTTONS
+================================= */
+
+.progress-btn {
+    padding: 8px 12px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    background: #f59e0b;
+
+    color: white;
+
+    cursor: pointer;
+
+    font-weight: bold;
+
+    margin-right: 5px;
+
+    margin-bottom: 5px;
+}
+
+.progress-btn:hover {
+    background: #d97706;
+}
+
+.resolve-btn {
+    padding: 8px 12px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    background: #16a34a;
+
+    color: white;
+
+    cursor: pointer;
+
+    font-weight: bold;
+
+    margin-bottom: 5px;
+}
+
+.resolve-btn:hover {
+    background: #15803d;
+}
+
+.completed {
+    color: #16a34a;
+    font-weight: bold;
+}
+
+/* =================================
+   ALERT ID
+================================= */
+
+.alert-id {
+    font-size: 11px;
+
+    color: #64748b;
+
+    word-break: break-all;
+
+    margin-top: 5px;
+}
+
+/* =================================
+   EMPTY
+================================= */
+
+.empty {
+    padding: 30px;
+
+    text-align: center;
+
+    color: #64748b;
+}
+
+/* =================================
+   MOBILE
+================================= */
+
+@media (max-width: 850px) {
 
     .cards {
-
-        display: grid;
-
-        grid-template-columns:
-            repeat(3, 1fr);
-
-        gap: 20px;
-
-        margin-bottom: 25px;
-    }
-
-    .card {
-
-        background: white;
-
-        padding: 22px;
-
-        border-radius: 12px;
-
-        box-shadow:
-            0 4px 15px
-            rgba(0,0,0,0.08);
-    }
-
-    .card h3 {
-
-        margin: 0 0 10px;
-
-        color: #64748b;
-
-        font-size: 16px;
-    }
-
-    .number {
-
-        font-size: 34px;
-
-        font-weight: bold;
-
-        color: #991b1b;
-    }
-
-    .active-number {
-        color: #dc2626;
-    }
-
-    .resolved-number {
-        color: #16a34a;
-    }
-
-    /* =================================
-       MESSAGE
-    ================================= */
-
-    #message {
-
-        margin-bottom: 20px;
-
-        padding: 12px 15px;
-
-        border-radius: 8px;
-
-        font-weight: bold;
-
-        display: none;
-    }
-
-    .message-info {
-
-        background: #dbeafe;
-
-        color: #1e40af;
-    }
-
-    .message-success {
-
-        background: #dcfce7;
-
-        color: #166534;
-    }
-
-    .message-error {
-
-        background: #fee2e2;
-
-        color: #991b1b;
-    }
-
-    /* =================================
-       FILTER BOX
-    ================================= */
-
-    .filter-box {
-
-        background: white;
-
-        padding: 20px;
-
-        border-radius: 12px;
-
-        box-shadow:
-            0 4px 15px
-            rgba(0,0,0,0.08);
-
-        margin-bottom: 25px;
-    }
-
-    .filter-box h3 {
-
-        margin-top: 0;
-
-        color: #334155;
+        grid-template-columns: 1fr;
     }
 
     .filters {
-
-        display: grid;
-
-        grid-template-columns:
-            2fr 1fr auto;
-
-        gap: 12px;
+        grid-template-columns: 1fr;
     }
 
-    .filters input,
-    .filters select {
-
-        width: 100%;
-
-        padding: 11px;
-
-        border:
-            1px solid #cbd5e1;
-
-        border-radius: 8px;
-
-        font-size: 14px;
-
-        outline: none;
+    .header {
+        padding: 18px 20px;
     }
 
-    .filters input:focus,
-    .filters select:focus {
-
-        border-color: #2563eb;
+    .container {
+        padding: 0 15px;
     }
 
-    .clear-btn {
-
-        border: none;
-
-        border-radius: 8px;
-
-        background: #64748b;
-
-        color: white;
-
-        padding: 11px 16px;
-
-        cursor: pointer;
-
-        font-weight: bold;
-    }
-
-    /* =================================
-       TABLE
-    ================================= */
-
-    .table-box {
-
-        background: white;
-
-        border-radius: 12px;
-
-        padding: 20px;
-
-        overflow-x: auto;
-
-        box-shadow:
-            0 4px 15px
-            rgba(0,0,0,0.08);
-    }
-
-    .table-info {
-
-        margin-bottom: 15px;
-
-        color: #64748b;
-
-        font-size: 14px;
-    }
-
-    table {
-
-        width: 100%;
-
-        border-collapse: collapse;
-
-        min-width: 1050px;
-    }
-
-    th,
-    td {
-
-        padding: 13px;
-
-        border-bottom:
-            1px solid #e5e7eb;
-
-        text-align: left;
-
-        vertical-align: top;
-    }
-
-    th {
-
-        background: #f8fafc;
-
-        color: #334155;
-    }
-
-    tr:hover td {
-        background: #f8fafc;
-    }
-
-    /* =================================
-       BADGES
-    ================================= */
-
-    .badge {
-
-        display: inline-block;
-
-        padding: 6px 10px;
-
-        border-radius: 20px;
-
-        font-size: 12px;
-
-        font-weight: bold;
-    }
-
-    .badge-active {
-
-        background: #fee2e2;
-
-        color: #991b1b;
-    }
-
-    .badge-resolved {
-
-        background: #dcfce7;
-
-        color: #166534;
-    }
-
-    /* =================================
-       BUTTON
-    ================================= */
-
-    .resolve-btn {
-
-        padding: 8px 12px;
-
-        border: none;
-
-        border-radius: 6px;
-
-        background: #16a34a;
-
-        color: white;
-
-        cursor: pointer;
-
-        font-weight: bold;
-    }
-
-    .resolve-btn:hover {
-
-        background: #15803d;
-    }
-
-    .completed {
-
-        color: #16a34a;
-
-        font-weight: bold;
-    }
-
-    /* =================================
-       ALERT ID
-    ================================= */
-
-    .alert-id {
-
-        font-size: 11px;
-
-        color: #64748b;
-
-        word-break: break-all;
-
-        margin-top: 5px;
-    }
-
-    /* =================================
-       EMPTY
-    ================================= */
-
-    .empty {
-
-        padding: 30px;
-
-        text-align: center;
-
-        color: #64748b;
-    }
-
-    /* =================================
-       MOBILE
-    ================================= */
-
-    @media (max-width: 850px) {
-
-        .cards {
-
-            grid-template-columns: 1fr;
-        }
-
-        .filters {
-
-            grid-template-columns: 1fr;
-        }
-
-        .header {
-
-            padding: 18px 20px;
-        }
-
-        .container {
-
-            padding: 0 15px;
-        }
-
-    }
+}
 
 </style>
-```
 
 </head>
 
 <body>
 
-```
 <!-- =================================
      ACCESS SCREEN
 ================================= -->
@@ -552,8 +525,6 @@
 
 <div id="dashboardContent">
 
-    <!-- HEADER -->
-
     <div class="header">
 
         <div class="header-left">
@@ -567,7 +538,6 @@
             </p>
 
         </div>
-
 
         <button
             class="logout"
@@ -685,8 +655,16 @@
                         All Status
                     </option>
 
+                    <option value="PENDING">
+                        Pending
+                    </option>
+
                     <option value="ACTIVE">
                         Active
+                    </option>
+
+                    <option value="IN_PROGRESS">
+                        In Progress
                     </option>
 
                     <option value="RESOLVED">
@@ -774,182 +752,25 @@
 
 <script>
 
-    let allAlerts = [];
+/* =========================================
+   DATA
+========================================= */
+
+let allAlerts = [];
 
 
-    // =========================================
-    // ACCESS CHECK
-    // =========================================
+/* =========================================
+   ACCESS CHECK
+========================================= */
 
-    async function checkSecurityAccess() {
+async function checkSecurityAccess() {
 
-        try {
+    try {
 
-            if (!window.supabaseClient) {
-
-                alert(
-                    "❌ Supabase is not connected."
-                );
-
-                window.location.href =
-                    "auth.html";
-
-                return false;
-            }
-
-
-            const {
-
-                data: userData,
-                error: userError
-
-            } =
-                await supabaseClient
-                    .auth
-                    .getUser();
-
-
-            if (
-                userError ||
-                !userData?.user
-            ) {
-
-                alert(
-                    "❌ Please login first."
-                );
-
-                window.location.href =
-                    "auth.html";
-
-                return false;
-            }
-
-
-            const user =
-                userData.user;
-
-
-            const {
-
-                data: profile,
-                error: profileError
-
-            } =
-                await supabaseClient
-                    .from("users")
-                    .select("name, role")
-                    .eq(
-                        "id",
-                        user.id
-                    )
-                    .maybeSingle();
-
-
-            if (profileError) {
-
-                console.error(
-                    "Profile error:",
-                    profileError
-                );
-
-                alert(
-                    "❌ Unable to verify your role."
-                );
-
-                window.location.href =
-                    "index.html";
-
-                return false;
-            }
-
-
-            const role =
-                String(
-                    profile?.role ||
-                    "STUDENT"
-                ).toUpperCase();
-
-
-            if (
-                role === "SECURITY"
-            ) {
-
-                let name =
-                    profile?.name ||
-                    user.user_metadata?.name ||
-                    "Security Team";
-
-
-                if (
-                    String(name)
-                        .toUpperCase() ===
-                    "NOTHING"
-                ) {
-
-                    name =
-                        "Security Team";
-
-                }
-
-
-                document.getElementById(
-                    "securityName"
-                ).innerText =
-                    "🛡️ " + name;
-
-            }
-
-
-            else if (
-                role === "ADMIN"
-            ) {
-
-                document.getElementById(
-                    "securityName"
-                ).innerText =
-                    "🛡️ Security Dashboard — Admin";
-
-            }
-
-
-            else {
-
-                alert(
-                    "❌ Access Denied. Security team only."
-                );
-
-                window.location.href =
-                    "index.html";
-
-                return false;
-            }
-
-
-            document.getElementById(
-                "accessLoading"
-            ).style.display =
-                "none";
-
-
-            document.getElementById(
-                "dashboardContent"
-            ).style.display =
-                "block";
-
-
-            return true;
-
-        }
-
-        catch (error) {
-
-            console.error(
-                "Security Access Error:",
-                error
-            );
+        if (!window.supabaseClient) {
 
             alert(
-                "❌ Access verification failed."
+                "❌ Supabase is not connected."
             );
 
             window.location.href =
@@ -958,549 +779,767 @@
             return false;
         }
 
-    }
+
+        const {
+            data: userData,
+            error: userError
+        } =
+            await window.supabaseClient
+                .auth
+                .getUser();
 
 
-    // =========================================
-    // LOAD ALERTS
-    // =========================================
+        if (
+            userError ||
+            !userData?.user
+        ) {
 
-    async function loadAlerts() {
-
-        const table =
-            document.getElementById(
-                "alertsTable"
+            alert(
+                "❌ Please login first."
             );
 
+            window.location.href =
+                "auth.html";
 
-        const tableInfo =
-            document.getElementById(
-                "tableInfo"
+            return false;
+        }
+
+
+        const user =
+            userData.user;
+
+
+        const {
+            data: profile,
+            error: profileError
+        } =
+            await window.supabaseClient
+                .from("users")
+                .select("name, role")
+                .eq(
+                    "id",
+                    user.id
+                )
+                .maybeSingle();
+
+
+        if (profileError) {
+
+            console.error(
+                "Profile error:",
+                profileError
             );
 
+            alert(
+                "❌ Unable to verify your role."
+            );
 
-        table.innerHTML = "";
+            window.location.href =
+                "index.html";
 
-        tableInfo.innerText =
-            "⏳ Loading emergency alerts...";
-
-
-        try {
-
-            const {
-
-                data,
-                error
-
-            } =
-                await supabaseClient
-                    .from("emergency_alerts")
-                    .select("*")
-                    .order(
-                        "created_at",
-                        {
-                            ascending:
-                                false
-                        }
-                    );
+            return false;
+        }
 
 
-            if (error) {
+        const role =
+            String(
+                profile?.role ||
+                "STUDENT"
+            )
+            .toUpperCase()
+            .trim();
 
-                console.error(
-                    "Emergency Error:",
-                    error
-                );
 
-                showMessage(
-                    "❌ Failed to load alerts: " +
-                    error.message,
-                    "message-error"
-                );
+        if (
+            role === "SECURITY"
+        ) {
 
-                tableInfo.innerText =
-                    "Unable to load alerts.";
+            let name =
+                profile?.name ||
+                user.user_metadata?.name ||
+                "Security Team";
 
-                return;
+
+            if (
+                String(name)
+                    .toUpperCase() ===
+                "NOTHING"
+            ) {
+
+                name =
+                    "Security Team";
+
             }
 
 
-            allAlerts =
-                data || [];
-
-
-            updateStats(
-                allAlerts
-            );
-
-
-            applyFilters();
-
+            document.getElementById(
+                "securityName"
+            ).innerText =
+                "🛡️ " + name;
 
         }
 
-        catch (error) {
+
+        else if (
+            role === "ADMIN"
+        ) {
+
+            document.getElementById(
+                "securityName"
+            ).innerText =
+                "🛡️ Security Dashboard — Admin";
+
+        }
+
+
+        else {
+
+            alert(
+                "❌ Access Denied. Security team only."
+            );
+
+            window.location.href =
+                "index.html";
+
+            return false;
+        }
+
+
+        document.getElementById(
+            "accessLoading"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "dashboardContent"
+        ).style.display =
+            "block";
+
+
+        return true;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Security Access Error:",
+            error
+        );
+
+        alert(
+            "❌ Access verification failed."
+        );
+
+        window.location.href =
+            "auth.html";
+
+        return false;
+    }
+
+}
+
+
+/* =========================================
+   LOAD ALERTS
+========================================= */
+
+async function loadAlerts() {
+
+    const table =
+        document.getElementById(
+            "alertsTable"
+        );
+
+
+    const tableInfo =
+        document.getElementById(
+            "tableInfo"
+        );
+
+
+    table.innerHTML = "";
+
+
+    tableInfo.innerText =
+        "⏳ Loading emergency alerts...";
+
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await window.supabaseClient
+                .from("emergency_alerts")
+                .select("*")
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
+
+
+        if (error) {
 
             console.error(
-                "Load Alert Error:",
+                "Emergency Error:",
                 error
             );
 
             showMessage(
-                "❌ Something went wrong while loading alerts.",
+                "❌ Failed to load alerts: " +
+                error.message,
                 "message-error"
             );
 
             tableInfo.innerText =
                 "Unable to load alerts.";
 
-        }
-
-    }
-
-
-    // =========================================
-    // UPDATE STATS
-    // =========================================
-
-    function updateStats(
-        alerts
-    ) {
-
-        const total =
-            alerts.length;
-
-
-        const active =
-            alerts.filter(
-                alert =>
-                    String(
-                        alert.status
-                    ).toUpperCase() ===
-                    "ACTIVE"
-            ).length;
-
-
-        const resolved =
-            alerts.filter(
-                alert =>
-                    String(
-                        alert.status
-                    ).toUpperCase() ===
-                    "RESOLVED"
-            ).length;
-
-
-        document.getElementById(
-            "totalAlerts"
-        ).innerText =
-            total;
-
-
-        document.getElementById(
-            "activeAlerts"
-        ).innerText =
-            active;
-
-
-        document.getElementById(
-            "resolvedAlerts"
-        ).innerText =
-            resolved;
-
-    }
-
-
-    // =========================================
-    // FILTER
-    // =========================================
-
-    function applyFilters() {
-
-        const search =
-            document.getElementById(
-                "searchInput"
-            ).value
-            .toLowerCase()
-            .trim();
-
-
-        const status =
-            document.getElementById(
-                "statusFilter"
-            ).value;
-
-
-        const filtered =
-            allAlerts.filter(
-                alert => {
-
-                    const type =
-                        String(
-                            alert.alert_type || ""
-                        ).toLowerCase();
-
-
-                    const location =
-                        String(
-                            alert.location || ""
-                        ).toLowerCase();
-
-
-                    const message =
-                        String(
-                            alert.message || ""
-                        ).toLowerCase();
-
-
-                    const alertStatus =
-                        String(
-                            alert.status || ""
-                        ).toUpperCase();
-
-
-                    const searchMatch =
-                        !search ||
-                        type.includes(search) ||
-                        location.includes(search) ||
-                        message.includes(search);
-
-
-                    const statusMatch =
-                        !status ||
-                        alertStatus === status;
-
-
-                    return (
-                        searchMatch &&
-                        statusMatch
-                    );
-
-                }
-            );
-
-
-        renderAlerts(
-            filtered
-        );
-
-    }
-
-
-    // =========================================
-    // RENDER ALERTS
-    // =========================================
-
-    function renderAlerts(
-        alerts
-    ) {
-
-        const table =
-            document.getElementById(
-                "alertsTable"
-            );
-
-
-        const tableInfo =
-            document.getElementById(
-                "tableInfo"
-            );
-
-
-        table.innerHTML =
-            "";
-
-
-        tableInfo.innerText =
-            `Showing ${alerts.length} of ${allAlerts.length} alerts`;
-
-
-        if (
-            alerts.length === 0
-        ) {
-
-            table.innerHTML = `
-
-                <tr>
-
-                    <td
-                        colspan="7"
-                        class="empty"
-                    >
-                        ✅ No matching emergency alerts.
-                    </td>
-
-                </tr>
-
-            `;
-
             return;
         }
 
 
-        alerts.forEach(
-            alert => {
-
-                const row =
-                    document.createElement(
-                        "tr"
-                    );
+        allAlerts =
+            data || [];
 
 
-                const status =
-                    String(
-                        alert.status ||
-                        "ACTIVE"
-                    ).toUpperCase();
-
-
-                const statusClass =
-                    status === "ACTIVE"
-                        ? "badge-active"
-                        : "badge-resolved";
-
-
-                let action =
-                    "";
-
-
-                if (
-                    status === "ACTIVE"
-                ) {
-
-                    action = `
-
-                        <button
-                            class="resolve-btn"
-                            onclick="
-                                resolveAlert(
-                                    '${escapeAttribute(
-                                        alert.id
-                                    )}'
-                                )
-                            "
-                        >
-                            ✅ Resolve
-                        </button>
-
-                    `;
-
-                }
-
-                else {
-
-                    action = `
-
-                        <span class="completed">
-                            ✓ Completed
-                        </span>
-
-                    `;
-
-                }
-
-
-                row.innerHTML = `
-
-                    <td>
-
-                        🚨
-                        ${escapeHTML(
-                            alert.alert_type ||
-                            "Emergency"
-                        )}
-
-                    </td>
-
-
-                    <td>
-
-                        📍
-                        ${escapeHTML(
-                            alert.location ||
-                            "-"
-                        )}
-
-                    </td>
-
-
-                    <td>
-
-                        ${escapeHTML(
-                            alert.message ||
-                            "-"
-                        )}
-
-                    </td>
-
-
-                    <td>
-
-                        <span
-                            class="badge
-                            ${statusClass}"
-                        >
-
-                            ${escapeHTML(
-                                status
-                            )}
-
-                        </span>
-
-                    </td>
-
-
-                    <td>
-
-                        ${formatDate(
-                            alert.created_at
-                        )}
-
-                    </td>
-
-
-                    <td>
-
-                        <div class="alert-id">
-
-                            ${escapeHTML(
-                                alert.id ||
-                                "-"
-                            )}
-
-                        </div>
-
-                    </td>
-
-
-                    <td>
-
-                        ${action}
-
-                    </td>
-
-                `;
-
-
-                table.appendChild(
-                    row
-                );
-
-            }
+        updateStats(
+            allAlerts
         );
-
-    }
-
-
-    // =========================================
-    // RESOLVE ALERT
-    // =========================================
-
-    async function resolveAlert(
-        id
-    ) {
-
-        const confirmed =
-            confirm(
-                "Are you sure you want to resolve this emergency alert?"
-            );
-
-
-        if (!confirmed) {
-            return;
-        }
-
-
-        try {
-
-            const {
-                error
-            } =
-                await supabaseClient
-                    .from("emergency_alerts")
-                    .update({
-                        status: "RESOLVED"
-                    })
-                    .eq(
-                        "id",
-                        id
-                    );
-
-
-            if (error) {
-
-                console.error(
-                    "Resolve Error:",
-                    error
-                );
-
-                showMessage(
-                    "❌ Failed to resolve alert: " +
-                    error.message,
-                    "message-error"
-                );
-
-                return;
-            }
-
-
-            showMessage(
-                "✅ Emergency alert resolved successfully!",
-                "message-success"
-            );
-
-
-            await loadAlerts();
-
-        }
-
-        catch (error) {
-
-            console.error(
-                "Resolve Error:",
-                error
-            );
-
-            showMessage(
-                "❌ Something went wrong.",
-                "message-error"
-            );
-
-        }
-
-    }
-
-
-    // =========================================
-    // CLEAR FILTERS
-    // =========================================
-
-    function clearFilters() {
-
-        document.getElementById(
-            "searchInput"
-        ).value = "";
-
-
-        document.getElementById(
-            "statusFilter"
-        ).value = "";
 
 
         applyFilters();
 
     }
 
+    catch (error) {
 
-    // =========================================
-    // REFRESH
-    // =========================================
-
-    async function refreshDashboard() {
+        console.error(
+            "Load Alert Error:",
+            error
+        );
 
         showMessage(
-            "🔄 Refreshing emergency dashboard...",
-            "message-info"
+            "❌ Something went wrong while loading alerts.",
+            "message-error"
+        );
+
+        tableInfo.innerText =
+            "Unable to load alerts.";
+
+    }
+
+}
+
+
+/* =========================================
+   UPDATE STATS
+========================================= */
+
+function updateStats(alerts) {
+
+    const total =
+        alerts.length;
+
+
+    const active =
+        alerts.filter(
+            alert => {
+
+                const status =
+                    String(
+                        alert.status ||
+                        ""
+                    )
+                    .toUpperCase()
+                    .trim();
+
+
+                return (
+                    status === "PENDING" ||
+                    status === "ACTIVE" ||
+                    status === "IN_PROGRESS"
+                );
+
+            }
+        ).length;
+
+
+    const resolved =
+        alerts.filter(
+            alert =>
+                String(
+                    alert.status ||
+                    ""
+                )
+                .toUpperCase()
+                .trim() ===
+                "RESOLVED"
+        ).length;
+
+
+    document.getElementById(
+        "totalAlerts"
+    ).innerText =
+        total;
+
+
+    document.getElementById(
+        "activeAlerts"
+    ).innerText =
+        active;
+
+
+    document.getElementById(
+        "resolvedAlerts"
+    ).innerText =
+        resolved;
+
+}
+
+
+/* =========================================
+   FILTER
+========================================= */
+
+function applyFilters() {
+
+    const search =
+        document.getElementById(
+            "searchInput"
+        )
+        .value
+        .toLowerCase()
+        .trim();
+
+
+    const statusFilter =
+        document.getElementById(
+            "statusFilter"
+        )
+        .value;
+
+
+    const filtered =
+        allAlerts.filter(
+            alert => {
+
+                const type =
+                    String(
+                        alert.alert_type ||
+                        ""
+                    ).toLowerCase();
+
+
+                const location =
+                    String(
+                        alert.location ||
+                        ""
+                    ).toLowerCase();
+
+
+                const message =
+                    String(
+                        alert.message ||
+                        ""
+                    ).toLowerCase();
+
+
+                const alertStatus =
+                    String(
+                        alert.status ||
+                        ""
+                    )
+                    .toUpperCase()
+                    .trim();
+
+
+                const searchMatch =
+                    !search ||
+                    type.includes(search) ||
+                    location.includes(search) ||
+                    message.includes(search);
+
+
+                const statusMatch =
+                    !statusFilter ||
+                    alertStatus ===
+                        statusFilter;
+
+
+                return (
+                    searchMatch &&
+                    statusMatch
+                );
+
+            }
+        );
+
+
+    renderAlerts(
+        filtered
+    );
+
+}
+
+
+/* =========================================
+   RENDER ALERTS
+========================================= */
+
+function renderAlerts(alerts) {
+
+    const table =
+        document.getElementById(
+            "alertsTable"
+        );
+
+
+    const tableInfo =
+        document.getElementById(
+            "tableInfo"
+        );
+
+
+    table.innerHTML =
+        "";
+
+
+    tableInfo.innerText =
+        `Showing ${alerts.length} of ${allAlerts.length} alerts`;
+
+
+    if (
+        alerts.length === 0
+    ) {
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="7"
+                    class="empty"
+                >
+                    ✅ No matching emergency alerts.
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+    }
+
+
+    alerts.forEach(
+        alert => {
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            const status =
+                String(
+                    alert.status ||
+                    "PENDING"
+                )
+                .toUpperCase()
+                .trim();
+
+
+            let statusClass =
+                "badge-pending";
+
+
+            let statusText =
+                "PENDING";
+
+
+            if (
+                status === "ACTIVE"
+            ) {
+
+                statusClass =
+                    "badge-active";
+
+                statusText =
+                    "ACTIVE";
+
+            }
+
+            else if (
+                status === "IN_PROGRESS"
+            ) {
+
+                statusClass =
+                    "badge-progress";
+
+                statusText =
+                    "IN PROGRESS";
+
+            }
+
+            else if (
+                status === "RESOLVED"
+            ) {
+
+                statusClass =
+                    "badge-resolved";
+
+                statusText =
+                    "RESOLVED";
+
+            }
+
+
+            let action =
+                "";
+
+
+            /*
+                PENDING or ACTIVE
+                -> IN PROGRESS
+                -> RESOLVED
+            */
+
+            if (
+                status === "PENDING" ||
+                status === "ACTIVE"
+            ) {
+
+                action = `
+
+                    <button
+                        class="progress-btn"
+                        onclick="
+                            markInProgress(
+                                '${escapeAttribute(
+                                    alert.id
+                                )}'
+                            )
+                        "
+                    >
+                        🔄 In Progress
+                    </button>
+
+                    <button
+                        class="resolve-btn"
+                        onclick="
+                            resolveAlert(
+                                '${escapeAttribute(
+                                    alert.id
+                                )}'
+                            )
+                        "
+                    >
+                        ✅ Resolve
+                    </button>
+
+                `;
+
+            }
+
+
+            /*
+                IN PROGRESS
+                -> RESOLVED
+            */
+
+            else if (
+                status ===
+                "IN_PROGRESS"
+            ) {
+
+                action = `
+
+                    <button
+                        class="resolve-btn"
+                        onclick="
+                            resolveAlert(
+                                '${escapeAttribute(
+                                    alert.id
+                                )}'
+                            )
+                        "
+                    >
+                        ✅ Resolve
+                    </button>
+
+                `;
+
+            }
+
+
+            /*
+                RESOLVED
+            */
+
+            else {
+
+                action = `
+
+                    <span class="completed">
+                        ✓ Completed
+                    </span>
+
+                `;
+
+            }
+
+
+            row.innerHTML = `
+
+                <td>
+
+                    🚨
+                    ${escapeHTML(
+                        alert.alert_type ||
+                        "Emergency"
+                    )}
+
+                </td>
+
+
+                <td>
+
+                    📍
+                    ${escapeHTML(
+                        alert.location ||
+                        "-"
+                    )}
+
+                </td>
+
+
+                <td>
+
+                    ${escapeHTML(
+                        alert.message ||
+                        "-"
+                    )}
+
+                </td>
+
+
+                <td>
+
+                    <span
+                        class="
+                            badge
+                            ${statusClass}
+                        "
+                    >
+                        ${statusText}
+                    </span>
+
+                </td>
+
+
+                <td>
+
+                    ${formatDate(
+                        alert.created_at
+                    )}
+
+                </td>
+
+
+                <td>
+
+                    <div
+                        class="alert-id"
+                    >
+
+                        ${escapeHTML(
+                            alert.id ||
+                            "-"
+                        )}
+
+                    </div>
+
+                </td>
+
+
+                <td>
+
+                    ${action}
+
+                </td>
+
+            `;
+
+
+            table.appendChild(
+                row
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   MARK IN PROGRESS
+========================================= */
+
+async function markInProgress(id) {
+
+    const confirmed =
+        confirm(
+            "Mark this emergency alert as In Progress?"
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    try {
+
+        const {
+            error
+        } =
+            await window.supabaseClient
+                .from("emergency_alerts")
+                .update({
+                    status:
+                        "IN_PROGRESS"
+                })
+                .eq(
+                    "id",
+                    id
+                );
+
+
+        if (error) {
+
+            console.error(
+                "In Progress Error:",
+                error
+            );
+
+            showMessage(
+                "❌ Failed to update alert: " +
+                error.message,
+                "message-error"
+            );
+
+            return;
+        }
+
+
+        showMessage(
+            "🔄 Emergency alert marked as In Progress.",
+            "message-success"
         );
 
 
@@ -1508,161 +1547,297 @@
 
     }
 
+    catch (error) {
 
-    // =========================================
-    // MESSAGE
-    // =========================================
+        console.error(
+            "In Progress Error:",
+            error
+        );
 
-    function showMessage(
-        text,
-        type
-    ) {
+        showMessage(
+            "❌ Something went wrong.",
+            "message-error"
+        );
 
-        const box =
-            document.getElementById(
-                "message"
+    }
+
+}
+
+
+/* =========================================
+   RESOLVE ALERT
+========================================= */
+
+async function resolveAlert(id) {
+
+    const confirmed =
+        confirm(
+            "Are you sure you want to resolve this emergency alert?"
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    try {
+
+        const {
+            error
+        } =
+            await window.supabaseClient
+                .from("emergency_alerts")
+                .update({
+                    status:
+                        "RESOLVED"
+                })
+                .eq(
+                    "id",
+                    id
+                );
+
+
+        if (error) {
+
+            console.error(
+                "Resolve Error:",
+                error
             );
 
+            showMessage(
+                "❌ Failed to resolve alert: " +
+                error.message,
+                "message-error"
+            );
 
-        box.className =
-            type;
-
-
-        box.innerText =
-            text;
-
-
-        box.style.display =
-            "block";
+            return;
+        }
 
 
-        setTimeout(
-            () => {
+        showMessage(
+            "✅ Emergency alert resolved successfully!",
+            "message-success"
+        );
 
-                box.style.display =
-                    "none";
 
-            },
-            3500
+        await loadAlerts();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Resolve Error:",
+            error
+        );
+
+        showMessage(
+            "❌ Something went wrong.",
+            "message-error"
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   CLEAR FILTERS
+========================================= */
+
+function clearFilters() {
+
+    document.getElementById(
+        "searchInput"
+    ).value = "";
+
+
+    document.getElementById(
+        "statusFilter"
+    ).value = "";
+
+
+    applyFilters();
+
+}
+
+
+/* =========================================
+   REFRESH
+========================================= */
+
+async function refreshDashboard() {
+
+    showMessage(
+        "🔄 Refreshing emergency dashboard...",
+        "message-info"
+    );
+
+
+    await loadAlerts();
+
+}
+
+
+/* =========================================
+   MESSAGE
+========================================= */
+
+function showMessage(
+    text,
+    type
+) {
+
+    const box =
+        document.getElementById(
+            "message"
+        );
+
+
+    box.className =
+        type;
+
+
+    box.innerText =
+        text;
+
+
+    box.style.display =
+        "block";
+
+
+    setTimeout(
+        () => {
+
+            box.style.display =
+                "none";
+
+        },
+        3500
+    );
+
+}
+
+
+/* =========================================
+   LOGOUT
+========================================= */
+
+async function logout() {
+
+    try {
+
+        await window.supabaseClient
+            .auth
+            .signOut();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Logout Error:",
+            error
         );
 
     }
 
 
-    // =========================================
-    // LOGOUT
-    // =========================================
+    window.location.href =
+        "auth.html";
 
-    async function logout() {
-
-        try {
-
-            await supabaseClient
-                .auth
-                .signOut();
-
-        }
-
-        catch (error) {
-
-            console.error(
-                "Logout Error:",
-                error
-            );
-
-        }
+}
 
 
-        window.location.href =
-            "auth.html";
+/* =========================================
+   DATE
+========================================= */
 
+function formatDate(date) {
+
+    if (!date) {
+        return "-";
     }
 
 
-    // =========================================
-    // DATE
-    // =========================================
-
-    function formatDate(
-        date
-    ) {
-
-        if (!date) {
-            return "-";
-        }
+    const parsedDate =
+        new Date(date);
 
 
-        return new Date(
-            date
-        ).toLocaleString();
-
-    }
-
-
-    // =========================================
-    // ESCAPE HTML
-    // =========================================
-
-    function escapeHTML(
-        text
-    ) {
-
-        const div =
-            document.createElement(
-                "div"
-            );
-
-
-        div.textContent =
-            text ?? "";
-
-
-        return div.innerHTML;
-
-    }
-
-
-    // =========================================
-    // ESCAPE ATTRIBUTE
-    // =========================================
-
-    function escapeAttribute(
-        text
-    ) {
-
-        return String(
-            text ?? ""
+    if (
+        isNaN(
+            parsedDate.getTime()
         )
-            .replace(
-                /\\/g,
-                "\\\\"
-            )
-            .replace(
-                /'/g,
-                "\\'"
-            );
+    ) {
+
+        return "-";
 
     }
 
 
-    // =========================================
-    // START
-    // =========================================
+    return parsedDate.toLocaleString();
 
-    checkSecurityAccess().then(
-        isAllowed => {
+}
 
-            if (isAllowed) {
 
-                loadAlerts();
+/* =========================================
+   ESCAPE HTML
+========================================= */
 
-            }
+function escapeHTML(text) {
 
-        }
+    const div =
+        document.createElement(
+            "div"
+        );
+
+
+    div.textContent =
+        text ?? "";
+
+
+    return div.innerHTML;
+
+}
+
+
+/* =========================================
+   ESCAPE ATTRIBUTE
+========================================= */
+
+function escapeAttribute(text) {
+
+    return String(
+        text ?? ""
+    )
+    .replace(
+        /\\/g,
+        "\\\\"
+    )
+    .replace(
+        /'/g,
+        "\\'"
     );
 
+}
+
+
+/* =========================================
+   START
+========================================= */
+
+checkSecurityAccess().then(
+    isAllowed => {
+
+        if (isAllowed) {
+            loadAlerts();
+        }
+
+    }
+);
+
 </script>
-```
 
 </body>
 
