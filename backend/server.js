@@ -8,30 +8,22 @@ const app = express();
 
 const PORT = process.env.PORT || 5000;
 
-
 // ==========================================
 // MIDDLEWARE
 // ==========================================
 
 app.use(express.json());
 
-
 // ==========================================
-// MANUAL CORS
+// CORS
 // ==========================================
 
 app.use((req, res, next) => {
-
-    res.header(
-        "Access-Control-Allow-Origin",
-        "*"
-    );
-
+    res.header("Access-Control-Allow-Origin", "*");
     res.header(
         "Access-Control-Allow-Headers",
         "Origin, X-Requested-With, Content-Type, Accept, Authorization"
     );
-
     res.header(
         "Access-Control-Allow-Methods",
         "GET, POST, PUT, DELETE, OPTIONS"
@@ -42,12 +34,32 @@ app.use((req, res, next) => {
     }
 
     next();
-
 });
 
+// ==========================================
+// ROOT TEST
+// ==========================================
+
+app.get("/", (req, res) => {
+    res.status(200).json({
+        success: true,
+        message: "Smart Campus AI Backend is Working!"
+    });
+});
 
 // ==========================================
-// AI CAMPUS ASSISTANT
+// API TEST
+// ==========================================
+
+app.get("/api/test", (req, res) => {
+    res.status(200).json({
+        success: true,
+        message: "API connection successful!"
+    });
+});
+
+// ==========================================
+// AI ASSISTANT
 // ==========================================
 
 app.use(
@@ -55,103 +67,68 @@ app.use(
     assistantRoutes
 );
 
-
 // ==========================================
-// HOME
-// ==========================================
-
-app.get("/", (req, res) => {
-
-    res.json({
-
-        success: true,
-
-        message:
-            "Smart Campus AI Backend is Working!"
-
-    });
-
-});
-
-
-// ==========================================
-// TEST API
-// ==========================================
-
-app.get("/api/test", (req, res) => {
-
-    res.json({
-
-        success: true,
-
-        message:
-            "API connection successful!"
-
-    });
-
-});
-
-
-// ==========================================
-// AI COMPLAINT PREDICTION
+// AI PREDICTION
 // ==========================================
 
 app.post("/api/predict", async (req, res) => {
-
     try {
+        const response = await fetch(
+            "http://127.0.0.1:8000/predict",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(req.body)
+            }
+        );
 
-        const response =
-            await fetch(
-                "http://127.0.0.1:8000/predict",
-                {
-
-                    method: "POST",
-
-                    headers: {
-
-                        "Content-Type":
-                            "application/json"
-
-                    },
-
-                    body:
-                        JSON.stringify(
-                            req.body
-                        )
-
-                }
-            );
-
-
-        const data =
-            await response.json();
-
+        const data = await response.json();
 
         res.json(data);
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "AI Prediction Error:",
             error
         );
 
-
         res.status(500).json({
-
             success: false,
-
-            message:
-                "AI Model server is not running"
-
+            message: "AI Model server is not running"
         });
-
     }
-
 });
 
+// ==========================================
+// 404 DEBUG ROUTE
+// ==========================================
+
+app.use((req, res) => {
+    res.status(404).json({
+        success: false,
+        message: "Route not found",
+        requested_url: req.originalUrl,
+        method: req.method
+    });
+});
+
+// ==========================================
+// ERROR HANDLER
+// ==========================================
+
+app.use((err, req, res, next) => {
+
+    console.error("SERVER ERROR:", err);
+
+    res.status(500).json({
+        success: false,
+        message: "Internal server error"
+    });
+
+});
 
 // ==========================================
 // START SERVER
