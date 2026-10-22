@@ -102,9 +102,10 @@ app.post(
             );
 
 
+            // NAYA AI LINK YAHAN UPDATE KIYA HAI
             const response =
                 await fetch(
-                    "https://smart-campus-ai-model.onrender.com/predict",
+                    "https://smart-campus-ai-7z4u.onrender.com/predict",
                     {
                         method: "POST",
 
