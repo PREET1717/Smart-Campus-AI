@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Campus AI - Login / Signup</title>
     
-    <!-- Supabase Scripts -->
-    <script src="[https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2](https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2)"></script>
+    <!-- UPDATED: Naya Supabase link jo kabhi fail nahi hoga -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <script src="supabase.js"></script>
 
@@ -94,7 +94,7 @@
         // Check if database is connected
         window.onload = function() {
             if (!window.supabaseClient) {
-                document.getElementById('authMessage').innerText = "❌ Configuration error. Check config.js";
+                document.getElementById('authMessage').innerText = "❌ Connection failed. Please Refresh (Ctrl+Shift+R).";
             }
         };
 
@@ -123,6 +123,11 @@
             if (!email || !password || !name) {
                 msgBox.innerText = "❌ Please fill all fields";
                 return;
+            }
+
+            if (!window.supabaseClient) {
+                 msgBox.innerText = "❌ Cannot connect to database. Refresh the page.";
+                 return;
             }
 
             try {
@@ -165,6 +170,11 @@
             if (!email || !password) {
                 msgBox.innerText = "❌ Please fill all fields";
                 return;
+            }
+
+            if (!window.supabaseClient) {
+                 msgBox.innerText = "❌ Cannot connect to database. Refresh the page.";
+                 return;
             }
 
             try {
