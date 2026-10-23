@@ -1,26 +1,16 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Campus AI</title>
 
     <!-- SUPABASE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <script src="config.js"></script>
     <script src="supabase.js"></script>
 
     <style>
-
         * {
             box-sizing: border-box;
             margin: 0;
@@ -36,7 +26,6 @@
         /* =====================================
            HEADER
         ===================================== */
-
         .header {
             background: #1e3a8a;
             color: white;
@@ -68,7 +57,6 @@
         /* =====================================
            NOTIFICATION
         ===================================== */
-
         .notification-wrapper {
             position: relative;
         }
@@ -197,7 +185,6 @@
         /* =====================================
            LAYOUT
         ===================================== */
-
         .layout {
             display: flex;
             min-height: calc(100vh - 70px);
@@ -206,7 +193,6 @@
         /* =====================================
            SIDEBAR
         ===================================== */
-
         .sidebar {
             width: 230px;
             background: white;
@@ -236,7 +222,6 @@
         /* =====================================
            MAIN
         ===================================== */
-
         .main {
             flex: 1;
             padding: 35px;
@@ -255,7 +240,6 @@
         /* =====================================
            CARDS
         ===================================== */
-
         .cards {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -284,7 +268,6 @@
         /* =====================================
            COMPLAINT BOX
         ===================================== */
-
         .complaint-box {
             background: white;
             padding: 30px;
@@ -344,7 +327,6 @@
         /* =====================================
            RESULT
         ===================================== */
-
         #result {
             margin-top: 20px;
             padding: 20px;
@@ -419,7 +401,6 @@
         /* =====================================
            SOS
         ===================================== */
-
         .sos-button {
             position: fixed;
             right: 25px;
@@ -443,54 +424,41 @@
         /* =====================================
            RESPONSIVE
         ===================================== */
-
         @media (max-width: 900px) {
-
             .cards {
                 grid-template-columns: repeat(2, 1fr);
             }
-
             .sidebar {
                 width: 180px;
             }
-
         }
 
         @media (max-width: 600px) {
-
             .header {
                 padding: 15px 20px;
             }
-
             .logo {
                 font-size: 19px;
             }
-
             .header-right {
                 gap: 8px;
             }
-
             .user {
                 font-size: 13px;
                 padding: 8px 12px;
             }
-
             .sidebar {
                 display: none;
             }
-
             .main {
                 padding: 20px;
             }
-
             .cards {
                 grid-template-columns: 1fr;
             }
-
             .complaint-box {
                 padding: 20px;
             }
-
             .notification-panel {
                 position: fixed;
                 top: 70px;
@@ -498,1480 +466,470 @@
                 left: 10px;
                 width: auto;
             }
-
         }
-
     </style>
-
 </head>
 
 <body>
-
     <!-- HEADER -->
-
     <div class="header">
-
         <div class="logo">
             🎓 Smart Campus AI
         </div>
-
         <div class="header-right">
-
             <!-- NOTIFICATION -->
-
-            <div
-                class="notification-wrapper"
-                id="notificationWrapper"
-            >
-
-                <button
-                    class="notification-btn"
-                    onclick="toggleNotifications()"
-                    title="Notifications"
-                >
+            <div class="notification-wrapper" id="notificationWrapper">
+                <button class="notification-btn" onclick="toggleNotifications()" title="Notifications">
                     🔔
-
-                    <span
-                        id="notificationCount"
-                        class="notification-count hidden"
-                    >
-                        0
-                    </span>
-
+                    <span id="notificationCount" class="notification-count hidden">0</span>
                 </button>
-
-                <div
-                    id="notificationPanel"
-                    class="notification-panel"
-                >
-
+                <div id="notificationPanel" class="notification-panel">
                     <div class="notification-header">
-
-                        <h3>
-                            🔔 Notifications
-                        </h3>
-
-                        <button
-                            class="read-btn"
-                            onclick="markAllAsRead()"
-                        >
-                            Mark all read
-                        </button>
-
+                        <h3>🔔 Notifications</h3>
+                        <button class="read-btn" onclick="markAllAsRead()">Mark all read</button>
                     </div>
-
-                    <div
-                        id="notificationList"
-                        class="notification-list"
-                    >
-
-                        <div class="no-notifications">
-                            Loading notifications...
-                        </div>
-
+                    <div id="notificationList" class="notification-list">
+                        <div class="no-notifications">Loading notifications...</div>
                     </div>
-
                 </div>
-
             </div>
-
             <!-- USER -->
-
-            <div
-                class="user"
-                id="userName"
-            >
-                Student
-            </div>
-
+            <div class="user" id="userName">Student</div>
         </div>
-
     </div>
-
 
     <!-- LAYOUT -->
-
     <div class="layout">
-
         <!-- SIDEBAR -->
-
         <div class="sidebar">
-
-            <h3>
-                Campus Menu
-            </h3>
-
-            <div
-                class="menu active"
-                onclick="goHome()"
-            >
-                🏠 Dashboard
-            </div>
-
-            <div
-                class="menu"
-                onclick="goComplaints()"
-            >
-                📝 Complaints
-            </div>
-
-            <div
-                class="menu"
-                onclick="goAssistant()"
-            >
-                🤖 AI Assistant
-            </div>
-
-            <div
-                class="menu"
-                onclick="goNotices()"
-            >
-                📢 Notices
-            </div>
-
-            <div
-                class="menu"
-                onclick="goEvents()"
-            >
-                📅 Events
-            </div>
-
-            <div
-                class="menu"
-                onclick="goLostFound()"
-            >
-                🔎 Lost & Found
-            </div>
-
-            <div
-                class="menu"
-                onclick="goEmergency()"
-            >
-                🚨 Emergency SOS
-            </div>
-
+            <h3>Campus Menu</h3>
+            <div class="menu active" onclick="goHome()">🏠 Dashboard</div>
+            <div class="menu" onclick="goComplaints()">📝 Complaints</div>
+            <div class="menu" onclick="goAssistant()">🤖 AI Assistant</div>
+            <div class="menu" onclick="goNotices()">📢 Notices</div>
+            <div class="menu" onclick="goEvents()">📅 Events</div>
+            <div class="menu" onclick="goLostFound()">🔎 Lost & Found</div>
+            <div class="menu" onclick="goEmergency()">🚨 Emergency SOS</div>
         </div>
-
 
         <!-- MAIN -->
-
         <div class="main">
-
             <div class="welcome">
-
-                <h1 id="welcomeTitle">
-                    Welcome to Smart Campus 👋
-                </h1>
-
-                <p>
-                    AI-powered campus management system
-                </p>
-
+                <h1 id="welcomeTitle">Welcome to Smart Campus 👋</h1>
+                <p>AI-powered campus management system</p>
             </div>
-
 
             <!-- CARDS -->
-
             <div class="cards">
-
                 <div class="card">
-
-                    <h4>
-                        Total Complaints
-                    </h4>
-
-                    <div
-                        class="number"
-                        id="totalComplaints"
-                    >
-                        0
-                    </div>
-
+                    <h4>Total Complaints</h4>
+                    <div class="number" id="totalComplaints">0</div>
                 </div>
-
                 <div class="card">
-
-                    <h4>
-                        Pending
-                    </h4>
-
-                    <div
-                        class="number"
-                        id="pendingComplaints"
-                    >
-                        0
-                    </div>
-
+                    <h4>Pending</h4>
+                    <div class="number" id="pendingComplaints">0</div>
                 </div>
-
                 <div class="card">
-
-                    <h4>
-                        Resolved
-                    </h4>
-
-                    <div
-                        class="number"
-                        id="resolvedComplaints"
-                    >
-                        0
-                    </div>
-
+                    <h4>Resolved</h4>
+                    <div class="number" id="resolvedComplaints">0</div>
                 </div>
-
                 <div class="card">
-
-                    <h4>
-                        AI Analyzed
-                    </h4>
-
-                    <div
-                        class="number"
-                        id="aiAnalyzed"
-                    >
-                        0
-                    </div>
-
+                    <h4>AI Analyzed</h4>
+                    <div class="number" id="aiAnalyzed">0</div>
                 </div>
-
             </div>
-
 
             <!-- AI COMPLAINT ANALYZER -->
-
             <div class="complaint-box">
-
-                <h2>
-                    🤖 AI Complaint Analyzer
-                </h2>
-
-                <p>
-                    Describe your campus problem.
-                    AI will automatically identify
-                    the category, priority, department
-                    and suggested action.
-                </p>
-
-                <textarea
-                    id="complaint"
-                    placeholder="Example: College washroom mein paani nahi aa raha..."
-                ></textarea>
-
-                <button
-                    id="analyzeButton"
-                    class="main-button"
-                    onclick="analyzeComplaint()"
-                >
-                    🤖 Analyze Complaint
-                </button>
-
+                <h2>🤖 AI Complaint Analyzer</h2>
+                <p>Describe your campus problem. AI will automatically identify the category, priority, department and suggested action.</p>
+                <textarea id="complaint" placeholder="Example: College washroom mein paani nahi aa raha..."></textarea>
+                <button id="analyzeButton" class="main-button" onclick="analyzeComplaint()">🤖 Analyze Complaint</button>
                 <div id="result"></div>
-
-                <div class="hint">
-                    💡 Example:
-                    "College laboratory ka AC kaam nahi kar raha."
-                </div>
-
+                <div class="hint">💡 Example: "College laboratory ka AC kaam nahi kar raha."</div>
             </div>
-
         </div>
-
     </div>
 
-
     <!-- SOS -->
-
-    <button
-        class="sos-button"
-        onclick="goEmergency()"
-    >
-        🚨 Emergency SOS
-    </button>
-
+    <button class="sos-button" onclick="goEmergency()">🚨 Emergency SOS</button>
 
     <script>
-
-        /* =====================================
-           CONFIG
-        ===================================== */
-
-        const BACKEND_URL =
-            "https://smart-campus-ai-backend-i2rz.onrender.com";
-
-        // NAYA AI LINK YAHAN UPDATE KIYA HAI
-        const AI_URL =
-            "https://smart-campus-ai-7z4u.onrender.com";
-
-
         let currentUserId = null;
-
 
         /* =====================================
            NAVIGATION
         ===================================== */
-
         function goHome() {
             window.location.href = "index.html";
         }
-
         function goComplaints() {
             window.location.href = "complaints.html";
         }
-
         function goAssistant() {
             window.location.href = "assistant.html";
         }
-
         function goNotices() {
             window.location.href = "notices.html";
         }
-
         function goEvents() {
             window.location.href = "events.html";
         }
-
         function goLostFound() {
             window.location.href = "lost-found.html";
         }
-
         function goEmergency() {
             window.location.href = "emergency.html";
         }
 
-
         /* =====================================
            LOAD DASHBOARD
         ===================================== */
-
         async function loadDashboard() {
-
             try {
-
                 if (!window.supabaseClient) {
-
-                    console.error(
-                        "Supabase client not found."
-                    );
-
+                    console.error("Supabase client not found.");
                     return;
                 }
-
-                const {
-                    data: complaints,
-                    error: complaintError
-                } =
-                    await window.supabaseClient
-                        .from("complaints")
-                        .select(
-                            "status, category"
-                        );
-
+                const { data: complaints, error: complaintError } = await window.supabaseClient
+                    .from("complaints")
+                    .select("status, category");
 
                 if (complaintError) {
-
-                    console.error(
-                        "Complaint Error:",
-                        complaintError
-                    );
-
+                    console.error("Complaint Error:", complaintError);
                     return;
                 }
 
+                const complaintList = complaints || [];
+                const total = complaintList.length;
+                const pending = complaintList.filter(c => String(c.status).toUpperCase() === "PENDING").length;
+                const resolved = complaintList.filter(c => String(c.status).toUpperCase() === "RESOLVED").length;
+                const aiAnalyzed = complaintList.filter(c => c.category && String(c.category).trim() !== "").length;
 
-                const complaintList =
-                    complaints || [];
-
-
-                const total =
-                    complaintList.length;
-
-
-                const pending =
-                    complaintList.filter(
-                        complaint =>
-                            String(
-                                complaint.status
-                            ).toUpperCase() ===
-                            "PENDING"
-                    ).length;
-
-
-                const resolved =
-                    complaintList.filter(
-                        complaint =>
-                            String(
-                                complaint.status
-                            ).toUpperCase() ===
-                            "RESOLVED"
-                    ).length;
-
-
-                const aiAnalyzed =
-                    complaintList.filter(
-                        complaint =>
-                            complaint.category &&
-                            String(
-                                complaint.category
-                            ).trim() !== ""
-                    ).length;
-
-
-                document.getElementById(
-                    "totalComplaints"
-                ).innerText =
-                    total;
-
-
-                document.getElementById(
-                    "pendingComplaints"
-                ).innerText =
-                    pending;
-
-
-                document.getElementById(
-                    "resolvedComplaints"
-                ).innerText =
-                    resolved;
-
-
-                document.getElementById(
-                    "aiAnalyzed"
-                ).innerText =
-                    aiAnalyzed;
-
+                document.getElementById("totalComplaints").innerText = total;
+                document.getElementById("pendingComplaints").innerText = pending;
+                document.getElementById("resolvedComplaints").innerText = resolved;
+                document.getElementById("aiAnalyzed").innerText = aiAnalyzed;
+            } catch (error) {
+                console.error("Dashboard Error:", error);
             }
-
-            catch (error) {
-
-                console.error(
-                    "Dashboard Error:",
-                    error
-                );
-
-            }
-
         }
-
 
         /* =====================================
            LOAD USER
         ===================================== */
-
         async function loadLoggedInUser() {
-
             try {
+                if (!window.supabaseClient) return;
 
-                if (!window.supabaseClient) {
+                const { data, error } = await window.supabaseClient.auth.getUser();
+
+                if (error || !data || !data.user) {
+                    setStudentName("Student");
                     return;
                 }
 
+                const user = data.user;
+                currentUserId = user.id;
 
-                const {
-                    data,
-                    error
-                } =
-                    await window.supabaseClient
-                        .auth
-                        .getUser();
+                let name = user.user_metadata?.name || user.user_metadata?.full_name || "";
 
+                const { data: profile, error: profileError } = await window.supabaseClient
+                    .from("users")
+                    .select("name, role")
+                    .eq("id", user.id)
+                    .maybeSingle();
 
-                if (
-                    error ||
-                    !data ||
-                    !data.user
-                ) {
-
-                    setStudentName(
-                        "Student"
-                    );
-
-                    return;
-                }
-
-
-                const user =
-                    data.user;
-
-
-                currentUserId =
-                    user.id;
-
-
-                let name =
-                    user.user_metadata?.name ||
-                    user.user_metadata?.full_name ||
-                    "";
-
-
-                const {
-                    data: profile,
-                    error: profileError
-                } =
-                    await window.supabaseClient
-                        .from("users")
-                        .select("name, role")
-                        .eq(
-                            "id",
-                            user.id
-                        )
-                        .maybeSingle();
-
-
-                if (
-                    !profileError &&
-                    profile?.name
-                ) {
-
-                    const profileName =
-                        String(
-                            profile.name
-                        ).trim();
-
-
-                    if (
-                        profileName &&
-                        profileName.toUpperCase() !==
-                        "NOTHING"
-                    ) {
-
-                        name =
-                            profileName;
-
+                if (!profileError && profile?.name) {
+                    const profileName = String(profile.name).trim();
+                    if (profileName && profileName.toUpperCase() !== "NOTHING") {
+                        name = profileName;
                     }
-
                 }
-
 
                 if (!name) {
-
-                    name =
-                        user.email
-                            ? user.email.split("@")[0]
-                            : "Student";
-
+                    name = user.email ? user.email.split("@")[0] : "Student";
                 }
 
-
-                if (
-                    !name ||
-                    name.toUpperCase() === "NOTHING"
-                ) {
-
-                    name =
-                        "Student";
-
+                if (!name || name.toUpperCase() === "NOTHING") {
+                    name = "Student";
                 }
 
-
-                setStudentName(
-                    name
-                );
-
-
+                setStudentName(name);
                 await loadNotifications();
-
+            } catch (error) {
+                console.error("User Load Error:", error);
+                setStudentName("Student");
             }
-
-            catch (error) {
-
-                console.error(
-                    "User Load Error:",
-                    error
-                );
-
-                setStudentName(
-                    "Student"
-                );
-
-            }
-
         }
 
-
-        function setStudentName(
-            name
-        ) {
-
-            document.getElementById(
-                "userName"
-            ).innerText =
-                name;
-
-
-            document.getElementById(
-                "welcomeTitle"
-            ).innerText =
-                "Welcome, " +
-                name +
-                " 👋";
-
+        function setStudentName(name) {
+            document.getElementById("userName").innerText = name;
+            document.getElementById("welcomeTitle").innerText = "Welcome, " + name + " 👋";
         }
-
 
         /* =====================================
            NOTIFICATIONS
         ===================================== */
-
         async function loadNotifications() {
+            if (!currentUserId) return;
 
-            if (!currentUserId) {
-                return;
-            }
+            const list = document.getElementById("notificationList");
+            list.innerHTML = `<div class="no-notifications">⏳ Loading notifications...</div>`;
 
-
-            const list =
-                document.getElementById(
-                    "notificationList"
-                );
-
-
-            list.innerHTML = `
-                <div class="no-notifications">
-                    ⏳ Loading notifications...
-                </div>
-            `;
-
-
-            const {
-                data,
-                error
-            } =
-                await window.supabaseClient
-                    .from("notifications")
-                    .select("*")
-                    .eq(
-                        "user_id",
-                        currentUserId
-                    )
-                    .order(
-                        "created_at",
-                        {
-                            ascending:
-                                false
-                        }
-                    )
-                    .limit(20);
-
+            const { data, error } = await window.supabaseClient
+                .from("notifications")
+                .select("*")
+                .eq("user_id", currentUserId)
+                .order("created_at", { ascending: false })
+                .limit(20);
 
             if (error) {
-
-                console.error(
-                    "Notification Error:",
-                    error
-                );
-
-
-                list.innerHTML = `
-                    <div class="no-notifications">
-                        ❌ Unable to load notifications.
-                    </div>
-                `;
-
+                console.error("Notification Error:", error);
+                list.innerHTML = `<div class="no-notifications">❌ Unable to load notifications.</div>`;
                 return;
             }
 
+            const notifications = data || [];
+            const unreadCount = notifications.filter(n => !n.is_read).length;
 
-            const notifications =
-                data || [];
+            updateNotificationCount(unreadCount);
 
-
-            const unreadCount =
-                notifications.filter(
-                    notification =>
-                        !notification.is_read
-                ).length;
-
-
-            updateNotificationCount(
-                unreadCount
-            );
-
-
-            if (
-                notifications.length === 0
-            ) {
-
-                list.innerHTML = `
-                    <div class="no-notifications">
-                        🔔 No notifications yet.
-                    </div>
-                `;
-
+            if (notifications.length === 0) {
+                list.innerHTML = `<div class="no-notifications">🔔 No notifications yet.</div>`;
                 return;
-
             }
-
 
             let html = "";
+            notifications.forEach(n => {
+                let icon = "🔔 ";
+                if(n.type === "COMPLAINT") icon = "📝 ";
+                if(n.type === "EMERGENCY") icon = "🚨 ";
+                
+                html += `
+                    <div class="notification-item ${!n.is_read ? "unread" : ""}" onclick="markNotificationAsRead('${escapeAttribute(n.id)}')">
+                        <div class="notification-title">${icon}${escapeHTML(n.title)}</div>
+                        <div class="notification-message">${escapeHTML(n.message)}</div>
+                        <div class="notification-date">${formatDate(n.created_at)}</div>
+                    </div>
+                `;
+            });
 
-
-            notifications.forEach(
-                notification => {
-
-                    html += `
-
-                        <div
-                            class="
-                                notification-item
-                                ${
-                                    !notification.is_read
-                                        ? "unread"
-                                        : ""
-                                }
-                            "
-                            onclick="
-                                markNotificationAsRead(
-                                    '${escapeAttribute(
-                                        notification.id
-                                    )}'
-                                )
-                            "
-                        >
-
-                            <div class="notification-title">
-
-                                ${
-                                    notification.type ===
-                                    "COMPLAINT"
-                                        ? "📝 "
-                                        : notification.type ===
-                                          "EMERGENCY"
-                                            ? "🚨 "
-                                            : "🔔 "
-                                }
-
-                                ${escapeHTML(
-                                    notification.title
-                                )}
-
-                            </div>
-
-
-                            <div class="notification-message">
-
-                                ${escapeHTML(
-                                    notification.message
-                                )}
-
-                            </div>
-
-
-                            <div class="notification-date">
-
-                                ${formatDate(
-                                    notification.created_at
-                                )}
-
-                            </div>
-
-                        </div>
-
-                    `;
-
-                }
-            );
-
-
-            list.innerHTML =
-                html;
-
+            list.innerHTML = html;
         }
 
-
-        function updateNotificationCount(
-            count
-        ) {
-
-            const badge =
-                document.getElementById(
-                    "notificationCount"
-                );
-
-
-            if (
-                count <= 0
-            ) {
-
-                badge.classList.add(
-                    "hidden"
-                );
-
-                badge.innerText =
-                    "0";
-
+        function updateNotificationCount(count) {
+            const badge = document.getElementById("notificationCount");
+            if (count <= 0) {
+                badge.classList.add("hidden");
+                badge.innerText = "0";
                 return;
-
             }
-
-
-            badge.classList.remove(
-                "hidden"
-            );
-
-
-            badge.innerText =
-                count > 99
-                    ? "99+"
-                    : count;
-
+            badge.classList.remove("hidden");
+            badge.innerText = count > 99 ? "99+" : count;
         }
-
 
         function toggleNotifications() {
-
-            const panel =
-                document.getElementById(
-                    "notificationPanel"
-                );
-
-
-            panel.classList.toggle(
-                "show"
-            );
-
-
-            if (
-                panel.classList.contains("show")
-            ) {
-
+            const panel = document.getElementById("notificationPanel");
+            panel.classList.toggle("show");
+            if (panel.classList.contains("show")) {
                 loadNotifications();
-
             }
-
         }
 
-
-        async function markNotificationAsRead(
-            id
-        ) {
-
-            if (!currentUserId) {
-                return;
-            }
-
-
-            const {
-                error
-            } =
-                await window.supabaseClient
-                    .from("notifications")
-                    .update({
-                        is_read: true
-                    })
-                    .eq(
-                        "id",
-                        id
-                    )
-                    .eq(
-                        "user_id",
-                        currentUserId
-                    );
-
+        async function markNotificationAsRead(id) {
+            if (!currentUserId) return;
+            const { error } = await window.supabaseClient
+                .from("notifications")
+                .update({ is_read: true })
+                .eq("id", id)
+                .eq("user_id", currentUserId);
 
             if (error) {
-
-                console.error(
-                    "Mark Read Error:",
-                    error
-                );
-
+                console.error("Mark Read Error:", error);
                 return;
             }
-
-
             await loadNotifications();
-
         }
-
 
         async function markAllAsRead() {
-
-            if (!currentUserId) {
-                return;
-            }
-
-
-            const {
-                error
-            } =
-                await window.supabaseClient
-                    .from("notifications")
-                    .update({
-                        is_read: true
-                    })
-                    .eq(
-                        "user_id",
-                        currentUserId
-                    )
-                    .eq(
-                        "is_read",
-                        false
-                    );
-
+            if (!currentUserId) return;
+            const { error } = await window.supabaseClient
+                .from("notifications")
+                .update({ is_read: true })
+                .eq("user_id", currentUserId)
+                .eq("is_read", false);
 
             if (error) {
-
-                console.error(
-                    "Mark All Read Error:",
-                    error
-                );
-
+                console.error("Mark All Read Error:", error);
                 return;
             }
-
-
             await loadNotifications();
-
         }
-
 
         /* =====================================
            AI COMPLAINT ANALYZER
         ===================================== */
-
         async function analyzeComplaint() {
+            const complaintText = document.getElementById("complaint").value.trim();
+            const result = document.getElementById("result");
+            const analyzeButton = document.getElementById("analyzeButton");
 
-            const complaintText =
-                document
-                    .getElementById("complaint")
-                    .value
-                    .trim();
-
-
-            const result =
-                document.getElementById("result");
-
-
-            const analyzeButton =
-                document.getElementById(
-                    "analyzeButton"
-                );
-
-
-            result.style.display =
-                "block";
-
+            result.style.display = "block";
 
             if (!complaintText) {
-
-                result.innerHTML = `
-                    <p class="error">
-                        ❌ Please enter a complaint.
-                    </p>
-                `;
-
+                result.innerHTML = `<p class="error">❌ Please enter a complaint.</p>`;
                 return;
             }
 
-
-            analyzeButton.disabled =
-                true;
-
-
-            analyzeButton.innerText =
-                "⏳ Analyzing...";
-
-
-            result.innerHTML = `
-                <div class="loading">
-                    ⏳ AI is analyzing your complaint...
-                </div>
-            `;
-
+            analyzeButton.disabled = true;
+            analyzeButton.innerText = "⏳ Analyzing...";
+            result.innerHTML = `<div class="loading">⏳ AI is analyzing your complaint...</div>`;
 
             try {
-
-                const response =
-                    await fetch(
-                        BACKEND_URL + "/api/predict",
-                        {
-                            method:
-                                "POST",
-
-                            headers: {
-                                "Content-Type":
-                                    "application/json"
-                            },
-
-                            body:
-                                JSON.stringify({
-                                    text:
-                                        complaintText
-                                })
-                        }
-                    );
-
+                // Yahan global variable BACKEND_URL use ho raha hai (jo config.js se aayega)
+                const response = await fetch(BACKEND_URL + "/api/predict", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ text: complaintText })
+                });
 
                 if (!response.ok) {
-
-                    throw new Error(
-                        "Backend server error: " +
-                        response.status
-                    );
+                    throw new Error("Backend server error: " + response.status);
                 }
 
-
-                const data =
-                    await response.json();
-
+                const data = await response.json();
 
                 if (!data.success) {
-
-                    result.innerHTML = `
-                        <p class="error">
-                            ❌ AI prediction failed.
-                            ${escapeHTML(
-                                data.message || ""
-                            )}
-                        </p>
-                    `;
-
+                    result.innerHTML = `<p class="error">❌ AI prediction failed. ${escapeHTML(data.message || "")}</p>`;
                     return;
                 }
 
+                const category = data.category || "General";
+                const priority = data.priority || "MEDIUM";
+                const department = data.department || "General";
+                const suggestedAction = data.suggested_action || "Forward the complaint to the appropriate campus department.";
 
-                const category =
-                    data.category ||
-                    "General";
-
-
-                const priority =
-                    data.priority ||
-                    "MEDIUM";
-
-
-                const department =
-                    data.department ||
-                    "General";
-
-
-                const suggestedAction =
-                    data.suggested_action ||
-                    "Forward the complaint to the appropriate campus department.";
-
-
-                let priorityClass =
-                    "badge-medium";
-
-
-                if (
-                    String(priority).toUpperCase() ===
-                    "HIGH"
-                ) {
-
-                    priorityClass =
-                        "badge-high";
-
-                }
-
-                else if (
-                    String(priority).toUpperCase() ===
-                    "LOW"
-                ) {
-
-                    priorityClass =
-                        "badge-low";
-
-                }
-
+                let priorityClass = "badge-medium";
+                if (String(priority).toUpperCase() === "HIGH") priorityClass = "badge-high";
+                else if (String(priority).toUpperCase() === "LOW") priorityClass = "badge-low";
 
                 if (!window.supabaseClient) {
-
-                    result.innerHTML = `
-                        <p class="error">
-                            ❌ Supabase is not connected.
-                        </p>
-                    `;
-
+                    result.innerHTML = `<p class="error">❌ Supabase is not connected.</p>`;
                     return;
                 }
 
-
-                let user =
-                    null;
-
-
+                let user = null;
                 try {
-
-                    const {
-                        data: userData
-                    } =
-                        await window.supabaseClient
-                            .auth
-                            .getUser();
-
-
-                    user =
-                        userData?.user ||
-                        null;
-
+                    const { data: userData } = await window.supabaseClient.auth.getUser();
+                    user = userData?.user || null;
+                } catch {
+                    user = null;
                 }
 
-                catch {
-
-                    user =
-                        null;
-
-                }
-
-
-                const {
-                    data: insertedComplaint,
-                    error: insertError
-                } =
-                    await window.supabaseClient
-                        .from("complaints")
-                        .insert({
-
-                            user_id:
-                                user
-                                    ? user.id
-                                    : null,
-
-                            complaint_text:
-                                complaintText,
-
-                            category:
-                                category,
-
-                            priority:
-                                priority,
-
-                            department:
-                                department,
-
-                            status:
-                                "PENDING"
-
-                        })
-                        .select()
-                        .single();
-
+                const { data: insertedComplaint, error: insertError } = await window.supabaseClient
+                    .from("complaints")
+                    .insert({
+                        user_id: user ? user.id : null,
+                        complaint_text: complaintText,
+                        category: category,
+                        priority: priority,
+                        department: department,
+                        status: "PENDING"
+                    })
+                    .select()
+                    .single();
 
                 if (insertError) {
-
-                    console.error(
-                        "DATABASE ERROR:",
-                        insertError
-                    );
-
-
+                    console.error("DATABASE ERROR:", insertError);
                     result.innerHTML = `
-
-                        <h3 class="result-title">
-                            🤖 AI Analysis Complete
-                        </h3>
-
-                        <p class="result-item">
-                            <b>Complaint:</b>
-                            ${escapeHTML(
-                                complaintText
-                            )}
-                        </p>
-
-                        <p class="result-item">
-                            <b>Category:</b>
-                            ${escapeHTML(
-                                category
-                            )}
-                        </p>
-
-                        <p class="result-item">
-                            <b>Priority:</b>
-
-                            <span
-                                class="
-                                    badge
-                                    ${priorityClass}
-                                "
-                            >
-                                ${escapeHTML(
-                                    priority
-                                )}
-                            </span>
-
-                        </p>
-
-                        <p class="result-item">
-                            <b>Department:</b>
-                            ${escapeHTML(
-                                department
-                            )}
-                        </p>
-
+                        <h3 class="result-title">🤖 AI Analysis Complete</h3>
+                        <p class="result-item"><b>Complaint:</b> ${escapeHTML(complaintText)}</p>
+                        <p class="result-item"><b>Category:</b> ${escapeHTML(category)}</p>
+                        <p class="result-item"><b>Priority:</b> <span class="badge ${priorityClass}">${escapeHTML(priority)}</span></p>
+                        <p class="result-item"><b>Department:</b> ${escapeHTML(department)}</p>
                         <div class="action-box">
-
-                            <b>
-                                💡 Suggested Action
-                            </b>
-
-                            <p style="margin-top:8px;">
-                                ${escapeHTML(
-                                    suggestedAction
-                                )}
-                            </p>
-
+                            <b>💡 Suggested Action</b>
+                            <p style="margin-top:8px;">${escapeHTML(suggestedAction)}</p>
                         </div>
-
-                        <p class="result-item">
-                            <b>Status:</b>
-                            PENDING
-                        </p>
-
-                        <p class="result-item error">
-                            ❌ Database save failed:
-                            ${escapeHTML(
-                                insertError.message
-                            )}
-                        </p>
-
+                        <p class="result-item"><b>Status:</b> PENDING</p>
+                        <p class="result-item error">❌ Database save failed: ${escapeHTML(insertError.message)}</p>
                     `;
-
                     return;
                 }
 
-
                 result.innerHTML = `
-
-                    <h3 class="result-title">
-                        ✅ AI Analysis Complete & Complaint Saved
-                    </h3>
-
-                    <p class="result-item">
-                        <b>Complaint:</b>
-                        ${escapeHTML(
-                            complaintText
-                        )}
-                    </p>
-
-                    <p class="result-item">
-                        <b>Category:</b>
-                        ${escapeHTML(
-                            category
-                        )}
-                    </p>
-
-                    <p class="result-item">
-                        <b>Priority:</b>
-
-                        <span
-                            class="
-                                badge
-                                ${priorityClass}
-                            "
-                        >
-                            ${escapeHTML(
-                                priority
-                            )}
-                        </span>
-
-                    </p>
-
-                    <p class="result-item">
-                        <b>Department:</b>
-                        ${escapeHTML(
-                            department
-                        )}
-                    </p>
-
+                    <h3 class="result-title">✅ AI Analysis Complete & Complaint Saved</h3>
+                    <p class="result-item"><b>Complaint:</b> ${escapeHTML(complaintText)}</p>
+                    <p class="result-item"><b>Category:</b> ${escapeHTML(category)}</p>
+                    <p class="result-item"><b>Priority:</b> <span class="badge ${priorityClass}">${escapeHTML(priority)}</span></p>
+                    <p class="result-item"><b>Department:</b> ${escapeHTML(department)}</p>
                     <div class="action-box">
-
-                        <b>
-                            💡 Suggested Action
-                        </b>
-
-                        <p style="margin-top:8px;">
-                            ${escapeHTML(
-                                suggestedAction
-                            )}
-                        </p>
-
+                        <b>💡 Suggested Action</b>
+                        <p style="margin-top:8px;">${escapeHTML(suggestedAction)}</p>
                     </div>
-
-                    <p class="result-item">
-                        <b>Status:</b>
-                        PENDING
-                    </p>
-
-                    <p class="result-item success">
-                        ✅ Complaint saved successfully!
-                    </p>
-
+                    <p class="result-item"><b>Status:</b> PENDING</p>
+                    <p class="result-item success">✅ Complaint saved successfully!</p>
                 `;
 
-
-                document.getElementById(
-                    "complaint"
-                ).value =
-                    "";
-
-
+                document.getElementById("complaint").value = "";
                 await loadDashboard();
-
                 await loadNotifications();
-
-            }
-
-            catch (error) {
-
-                console.error(
-                    "AI ERROR:",
-                    error
-                );
-
-
+            } catch (error) {
+                console.error("AI ERROR:", error);
                 result.innerHTML = `
-
-                    <p class="error">
-                        ❌ Connection Error
-                    </p>
-
-                    <br>
-
-                    Make sure the backend server
-                    is available.
-
-                    <br><br>
-
-                    Backend:
-                    ${BACKEND_URL}
-
-                    <br><br>
-
-                    AI Model:
-                    ${AI_URL}
-
+                    <p class="error">❌ Connection Error</p><br>
+                    Make sure the backend server is available.<br><br>
+                    Backend: ${BACKEND_URL}<br><br>
+                    AI Model: ${typeof AI_URL !== 'undefined' ? AI_URL : 'Unknown'}
                 `;
-
+            } finally {
+                analyzeButton.disabled = false;
+                analyzeButton.innerText = "🤖 Analyze Complaint";
             }
-
-            finally {
-
-                analyzeButton.disabled =
-                    false;
-
-
-                analyzeButton.innerText =
-                    "🤖 Analyze Complaint";
-
-            }
-
         }
-
 
         /* =====================================
            FORMAT DATE
         ===================================== */
-
-        function formatDate(
-            date
-        ) {
-
-            if (!date) {
-                return "-";
-            }
-
-
-            return new Date(
-                date
-            ).toLocaleString();
-
+        function formatDate(date) {
+            if (!date) return "-";
+            return new Date(date).toLocaleString();
         }
-
 
         /* =====================================
            ESCAPE HTML
         ===================================== */
-
-        function escapeHTML(
-            text
-        ) {
-
-            const div =
-                document.createElement(
-                    "div"
-                );
-
-
-            div.textContent =
-                text ?? "";
-
-
+        function escapeHTML(text) {
+            const div = document.createElement("div");
+            div.textContent = text ?? "";
             return div.innerHTML;
-
         }
-
 
         /* =====================================
            ESCAPE ATTRIBUTE
         ===================================== */
-
-        function escapeAttribute(
-            text
-        ) {
-
-            return String(
-                text ?? ""
-            )
-                .replace(
-                    /\\/g,
-                    "\\\\"
-                )
-                .replace(
-                    /'/g,
-                    "\\'"
-                );
-
+        function escapeAttribute(text) {
+            return String(text ?? "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
         }
-
 
         /* =====================================
            CLOSE NOTIFICATION PANEL
         ===================================== */
-
-        document.addEventListener(
-            "click",
-            function(event) {
-
-                const wrapper =
-                    document.getElementById(
-                        "notificationWrapper"
-                    );
-
-                const panel =
-                    document.getElementById(
-                        "notificationPanel"
-                    );
-
-
-                if (
-                    wrapper &&
-                    panel &&
-                    !wrapper.contains(
-                        event.target
-                    )
-                ) {
-
-                    panel.classList.remove(
-                        "show"
-                    );
-
-                }
-
+        document.addEventListener("click", function(event) {
+            const wrapper = document.getElementById("notificationWrapper");
+            const panel = document.getElementById("notificationPanel");
+            if (wrapper && panel && !wrapper.contains(event.target)) {
+                panel.classList.remove("show");
             }
-        );
-
+        });
 
         /* =====================================
            PAGE START
         ===================================== */
-
         loadLoggedInUser();
-
         loadDashboard();
 
     </script>
-
 </body>
-
 </html>
