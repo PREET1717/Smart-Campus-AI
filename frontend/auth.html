@@ -1,1097 +1,204 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
-```
-<meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>Smart Campus AI - Login</title>
-
-
-<!-- =========================
-     SUPABASE
-========================== -->
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="config.js"></script>
-
-<script src="supabase.js"></script>
-
-
-<style>
-
-    * {
-        box-sizing: border-box;
-        font-family: Arial, sans-serif;
-    }
-
-
-    body {
-
-        margin: 0;
-
-        min-height: 100vh;
-
-        display: flex;
-
-        justify-content: center;
-
-        align-items: center;
-
-        background: #eef3ff;
-
-    }
-
-
-    .container {
-
-        width: 400px;
-
-        max-width: 90%;
-
-        background: white;
-
-        padding: 35px;
-
-        border-radius: 15px;
-
-        box-shadow:
-            0 8px 30px
-            rgba(0,0,0,0.1);
-
-    }
-
-
-    h1 {
-
-        text-align: center;
-
-        color: #1e3a8a;
-
-        margin-bottom: 5px;
-
-    }
-
-
-    .subtitle {
-
-        text-align: center;
-
-        color: #6b7280;
-
-        margin-bottom: 25px;
-
-    }
-
-
-    h2 {
-
-        color: #1e293b;
-
-        margin-bottom: 20px;
-
-    }
-
-
-    label {
-
-        display: block;
-
-        margin-bottom: 5px;
-
-        color: #374151;
-
-        font-weight: bold;
-
-    }
-
-
-    input {
-
-        width: 100%;
-
-        padding: 13px;
-
-        margin-bottom: 15px;
-
-        border:
-            1px solid #d1d5db;
-
-        border-radius: 8px;
-
-        font-size: 15px;
-
-    }
-
-
-    input:focus {
-
-        outline: none;
-
-        border-color: #1e3a8a;
-
-    }
-
-
-    button {
-
-        width: 100%;
-
-        padding: 13px;
-
-        border: none;
-
-        border-radius: 8px;
-
-        background: #1e3a8a;
-
-        color: white;
-
-        font-size: 16px;
-
-        font-weight: bold;
-
-        cursor: pointer;
-
-        margin-top: 5px;
-
-    }
-
-
-    button:hover {
-
-        background: #172f73;
-
-    }
-
-
-    button:disabled {
-
-        background: #94a3b8;
-
-        cursor: not-allowed;
-
-    }
-
-
-    .switch {
-
-        text-align: center;
-
-        margin-top: 20px;
-
-        color: #555;
-
-    }
-
-
-    .switch span {
-
-        color: #1e3a8a;
-
-        font-weight: bold;
-
-        cursor: pointer;
-
-    }
-
-
-    #message {
-
-        margin-top: 15px;
-
-        text-align: center;
-
-        font-weight: bold;
-
-        line-height: 1.5;
-
-    }
-
-
-    #signupBox {
-
-        display: none;
-
-    }
-
-
-</style>
-```
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Campus AI - Login / Signup</title>
+    
+    <!-- Supabase Scripts -->
+    <script src="[https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2](https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2)"></script>
+    <script src="config.js"></script>
+    <script src="supabase.js"></script>
+
+    <style>
+        body {
+            background: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+        .auth-container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        h2 { color: #1e3a8a; margin-bottom: 5px; }
+        p.subtitle { color: #666; margin-bottom: 25px; font-size: 14px; }
+        h3 { color: #333; margin-bottom: 20px; }
+        
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px;}
+        .input-group input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; outline: none; }
+        .input-group input:focus { border-color: #1e3a8a; }
+        
+        .btn { width: 100%; padding: 12px; background: #1e3a8a; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; margin-top: 10px; transition: 0.3s;}
+        .btn:hover { background: #152b69; }
+        
+        .toggle-link { color: #1e3a8a; cursor: pointer; font-size: 14px; text-decoration: none; margin-top: 20px; display: inline-block; font-weight: bold;}
+        .toggle-link:hover { text-decoration: underline; }
+        
+        .error-msg { color: #dc2626; margin-top: 15px; font-weight: bold; font-size: 14px;}
+        .success-msg { color: #16a34a; margin-top: 15px; font-weight: bold; font-size: 14px;}
+    </style>
 </head>
-
 <body>
+    <div class="auth-container">
+        <h2>🎓 Smart Campus AI</h2>
+        <p class="subtitle">Smart Campus Management System</p>
+        <h3 id="formTitle">Student Signup</h3>
 
-<div class="container">
+        <!-- Signup Form -->
+        <div id="signupForm">
+            <div class="input-group">
+                <label>Name</label>
+                <input type="text" id="signupName" placeholder="Enter your full name">
+            </div>
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" id="signupEmail" placeholder="Enter your email">
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="signupPassword" placeholder="Create a password (min 6 chars)">
+            </div>
+            <button class="btn" onclick="signup()">Create Account</button>
+            <span class="toggle-link" onclick="toggleForm('login')">Already have an account? Login</span>
+        </div>
 
-```
-<h1>
+        <!-- Login Form -->
+        <div id="loginForm" style="display: none;">
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" id="loginEmail" placeholder="Enter your email">
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="loginPassword" placeholder="Enter your password">
+            </div>
+            <button class="btn" onclick="login()">Login</button>
+            <span class="toggle-link" onclick="toggleForm('signup')">Don't have an account? Signup</span>
+        </div>
 
-    🎓 Smart Campus AI
-
-</h1>
-
-
-<p class="subtitle">
-
-    Smart Campus Management System
-
-</p>
-
-
-
-<!-- =========================
-     LOGIN
-========================== -->
-
-<div id="loginBox">
-
-
-    <h2>
-
-        Login
-
-    </h2>
-
-
-    <label>
-        Email
-    </label>
-
-
-    <input
-        type="email"
-        id="loginEmail"
-        placeholder="Enter your email"
-        autocomplete="email"
-    >
-
-
-    <label>
-        Password
-    </label>
-
-
-    <input
-        type="password"
-        id="loginPassword"
-        placeholder="Enter your password"
-        autocomplete="current-password"
-    >
-
-
-    <button
-        id="loginButton"
-        onclick="login()"
-    >
-
-        Login
-
-    </button>
-
-
-    <div class="switch">
-
-        Don't have an account?
-
-        <span
-            onclick="showSignup()"
-        >
-
-            Sign Up
-
-        </span>
-
+        <div id="authMessage" class="error-msg"></div>
     </div>
 
-
-</div>
-
-
-
-<!-- =========================
-     SIGNUP
-========================== -->
-
-<div id="signupBox">
-
-
-    <h2>
-
-        Student Signup
-
-    </h2>
-
-
-    <label>
-        Name
-    </label>
-
-
-    <input
-        type="text"
-        id="signupName"
-        placeholder="Enter your name"
-        autocomplete="name"
-    >
-
-
-    <label>
-        Email
-    </label>
-
-
-    <input
-        type="email"
-        id="signupEmail"
-        placeholder="Enter your email"
-        autocomplete="email"
-    >
-
-
-    <label>
-        Password
-    </label>
-
-
-    <input
-        type="password"
-        id="signupPassword"
-        placeholder="Create password"
-        autocomplete="new-password"
-    >
-
-
-    <button
-        id="signupButton"
-        onclick="signup()"
-    >
-
-        Create Account
-
-    </button>
-
-
-    <div class="switch">
-
-        Already have an account?
-
-        <span
-            onclick="showLogin()"
-        >
-
-            Login
-
-        </span>
-
-    </div>
-
-
-</div>
-
-
-<div id="message"></div>
-```
-
-</div>
-
-<script>
-
-
-// ==========================================
-// SHOW SIGNUP
-// ==========================================
-
-function showSignup() {
-
-    document.getElementById(
-        "loginBox"
-    ).style.display =
-        "none";
-
-
-    document.getElementById(
-        "signupBox"
-    ).style.display =
-        "block";
-
-
-    document.getElementById(
-        "message"
-    ).innerText =
-        "";
-
-}
-
-
-
-// ==========================================
-// SHOW LOGIN
-// ==========================================
-
-function showLogin() {
-
-    document.getElementById(
-        "signupBox"
-    ).style.display =
-        "none";
-
-
-    document.getElementById(
-        "loginBox"
-    ).style.display =
-        "block";
-
-
-    document.getElementById(
-        "message"
-    ).innerText =
-        "";
-
-}
-
-
-
-// ==========================================
-// MESSAGE
-// ==========================================
-
-function showMessage(
-    text,
-    type = "normal"
-) {
-
-    const message =
-        document.getElementById(
-            "message"
-        );
-
-
-    message.innerText =
-        text;
-
-
-    if (
-        type === "error"
-    ) {
-
-        message.style.color =
-            "#dc2626";
-
-    }
-
-    else if (
-        type === "success"
-    ) {
-
-        message.style.color =
-            "#16a34a";
-
-    }
-
-    else {
-
-        message.style.color =
-            "#374151";
-
-    }
-
-}
-
-
-
-// ==========================================
-// SIGNUP
-// ==========================================
-
-async function signup() {
-
-
-    const name =
-        document
-            .getElementById(
-                "signupName"
-            )
-            .value
-            .trim();
-
-
-    const email =
-        document
-            .getElementById(
-                "signupEmail"
-            )
-            .value
-            .trim()
-            .toLowerCase();
-
-
-    const password =
-        document.getElementById(
-            "signupPassword"
-        ).value;
-
-
-    // CHECK FIELDS
-
-    if (
-        !name ||
-        !email ||
-        !password
-    ) {
-
-        showMessage(
-            "❌ Please fill all fields.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    // PASSWORD
-
-    if (
-        password.length < 6
-    ) {
-
-        showMessage(
-            "❌ Password must be at least 6 characters.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    // SUPABASE
-
-    if (
-        !window.supabaseClient
-    ) {
-
-        showMessage(
-            "❌ Supabase is not connected.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    const button =
-        document.getElementById(
-            "signupButton"
-        );
-
-
-    button.disabled = true;
-
-    button.innerText =
-        "Creating...";
-
-
-    try {
-
-
-        const {
-
-            data,
-            error
-
-        } =
-            await window.supabaseClient
-
-                .auth
-
-                .signUp({
-
-                    email:
-                        email,
-
-                    password:
-                        password,
-
-                    options: {
-
-                        data: {
-
-                            name:
-                                name
-
-                        }
-
+    <script>
+        // Check if database is connected
+        window.onload = function() {
+            if (!window.supabaseClient) {
+                document.getElementById('authMessage').innerText = "❌ Configuration error. Check config.js";
+            }
+        };
+
+        function toggleForm(type) {
+            document.getElementById('authMessage').innerText = "";
+            if (type === 'login') {
+                document.getElementById('signupForm').style.display = 'none';
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('formTitle').innerText = 'Student Login';
+            } else {
+                document.getElementById('signupForm').style.display = 'block';
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('formTitle').innerText = 'Student Signup';
+            }
+        }
+
+        async function signup() {
+            const name = document.getElementById('signupName').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const password = document.getElementById('signupPassword').value;
+            const msgBox = document.getElementById('authMessage');
+            
+            msgBox.className = "error-msg";
+            msgBox.innerText = "⏳ Creating account...";
+
+            if (!email || !password || !name) {
+                msgBox.innerText = "❌ Please fill all fields";
+                return;
+            }
+
+            try {
+                const { data, error } = await window.supabaseClient.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: { data: { name: name } }
+                });
+
+                if (error) throw error;
+                
+                // Add user to custom database table
+                if (data.user) {
+                    await window.supabaseClient.from('users').insert({
+                        id: data.user.id,
+                        name: name,
+                        role: 'STUDENT'
+                    });
+                }
+
+                msgBox.className = "success-msg";
+                msgBox.innerText = "✅ Account created! Redirecting...";
+                setTimeout(() => window.location.href = "index.html", 1500);
+
+            } catch (error) {
+                console.error("Signup Error:", error);
+                msgBox.className = "error-msg";
+                msgBox.innerText = "❌ " + error.message;
+            }
+        }
+
+        async function login() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const msgBox = document.getElementById('authMessage');
+
+            msgBox.className = "error-msg";
+            msgBox.innerText = "⏳ Logging in...";
+
+            if (!email || !password) {
+                msgBox.innerText = "❌ Please fill all fields";
+                return;
+            }
+
+            try {
+                const { data, error } = await window.supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if (error) throw error;
+
+                msgBox.className = "success-msg";
+                msgBox.innerText = "✅ Login successful!";
+                
+                // Check Role and redirect
+                const { data: userData } = await window.supabaseClient
+                    .from('users')
+                    .select('role')
+                    .eq('id', data.user.id)
+                    .single();
+
+                setTimeout(() => {
+                    if (userData && (userData.role === 'ADMIN' || userData.role === 'MAINTENANCE')) {
+                         window.location.href = "maintenance-dashboard.html";
+                    } else {
+                         window.location.href = "index.html";
                     }
+                }, 1000);
 
-                });
-
-
-        // SIGNUP ERROR
-
-        if (error) {
-
-            console.error(
-                "Signup Error:",
-                error
-            );
-
-
-            showMessage(
-                "❌ " + error.message,
-                "error"
-            );
-
-            return;
-
+            } catch (error) {
+                console.error("Login Error:", error);
+                msgBox.className = "error-msg";
+                msgBox.innerText = "❌ " + error.message;
+            }
         }
-
-
-        if (
-            !data?.user
-        ) {
-
-            showMessage(
-                "❌ Account creation failed.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        // ==========================================
-        // IF SESSION EXISTS
-        // ==========================================
-
-        if (
-            data.session
-        ) {
-
-            showMessage(
-                "✅ Account created successfully!",
-                "success"
-            );
-
-
-            setTimeout(
-                () => {
-
-                    window.location.href =
-                        "index.html";
-
-                },
-                1000
-            );
-
-
-            return;
-
-        }
-
-
-        // ==========================================
-        // NO SESSION
-        // ==========================================
-
-        showMessage(
-            "✅ Account created! You can now login.",
-            "success"
-        );
-
-
-        setTimeout(
-            () => {
-
-                showLogin();
-
-            },
-            800
-        );
-
-    }
-
-
-    catch (error) {
-
-        console.error(
-            "Signup Error:",
-            error
-        );
-
-
-        showMessage(
-            "❌ Something went wrong during signup.",
-            "error"
-        );
-
-    }
-
-
-    finally {
-
-        button.disabled = false;
-
-        button.innerText =
-            "Create Account";
-
-    }
-
-}
-
-
-
-// ==========================================
-// LOGIN
-// ==========================================
-
-async function login() {
-
-
-    const email =
-        document
-            .getElementById(
-                "loginEmail"
-            )
-            .value
-            .trim()
-            .toLowerCase();
-
-
-    const password =
-        document
-            .getElementById(
-                "loginPassword"
-            )
-            .value;
-
-
-    // CHECK FIELDS
-
-    if (
-        !email ||
-        !password
-    ) {
-
-        showMessage(
-            "❌ Please enter email and password.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    // SUPABASE
-
-    if (
-        !window.supabaseClient
-    ) {
-
-        showMessage(
-            "❌ Supabase is not connected.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    const button =
-        document.getElementById(
-            "loginButton"
-        );
-
-
-    button.disabled = true;
-
-    button.innerText =
-        "Logging in...";
-
-
-    try {
-
-
-        // ==========================================
-        // LOGIN
-        // ==========================================
-
-        const {
-
-            data,
-            error
-
-        } =
-            await window.supabaseClient
-
-                .auth
-
-                .signInWithPassword({
-
-                    email:
-                        email,
-
-                    password:
-                        password
-
-                });
-
-
-        // LOGIN ERROR
-
-        if (error) {
-
-            console.error(
-                "Login Error:",
-                error
-            );
-
-
-            showMessage(
-                "❌ " + error.message,
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        const user =
-            data?.user;
-
-
-        if (!user) {
-
-            showMessage(
-                "❌ Login failed.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        // ==========================================
-        // GET PROFILE
-        // ==========================================
-
-        const {
-
-            data: profile,
-            error: profileError
-
-        } =
-            await window.supabaseClient
-
-                .from("users")
-
-                .select(
-                    "name, email, role"
-                )
-
-                .eq(
-                    "id",
-                    user.id
-                )
-
-                .maybeSingle();
-
-
-        if (profileError) {
-
-            console.error(
-                "Profile Error:",
-                profileError
-            );
-
-
-            showMessage(
-                "✅ Login successful, but profile could not be loaded.",
-                "success"
-            );
-
-
-            setTimeout(
-                () => {
-
-                    window.location.href =
-                        "index.html";
-
-                },
-                1000
-            );
-
-
-            return;
-
-        }
-
-
-        // ==========================================
-        // ROLE
-        // ==========================================
-
-        const role =
-            (
-                profile?.role ||
-                "STUDENT"
-            )
-            .toUpperCase()
-            .trim();
-
-
-        console.log(
-            "LOGIN ROLE:",
-            role
-        );
-
-
-        showMessage(
-            "✅ Login successful!",
-            "success"
-        );
-
-
-        // ==========================================
-        // ROLE BASED REDIRECTION
-        // ==========================================
-
-        setTimeout(
-            () => {
-
-
-                // STUDENT
-
-                if (
-                    role ===
-                    "STUDENT"
-                ) {
-
-                    window.location.href =
-                        "index.html";
-
-                }
-
-
-                // ADMIN
-
-                else if (
-                    role ===
-                    "ADMIN"
-                ) {
-
-                    window.location.href =
-                        "admin-dashboard.html";
-
-                }
-
-
-                // FACULTY
-
-                else if (
-                    role ===
-                    "FACULTY"
-                ) {
-
-                    window.location.href =
-                        "faculty-dashboard.html";
-
-                }
-
-
-                // SECURITY
-
-                else if (
-                    role ===
-                    "SECURITY"
-                ) {
-
-                    window.location.href =
-                        "admin-emergency.html";
-
-                }
-
-
-                // MAINTENANCE
-
-                else if (
-                    role ===
-                    "MAINTENANCE"
-                ) {
-
-                    window.location.href =
-                        "maintenance-dashboard.html";
-
-                }
-
-
-                // UNKNOWN ROLE
-
-                else {
-
-                    console.warn(
-                        "Unknown role:",
-                        role
-                    );
-
-
-                    window.location.href =
-                        "index.html";
-
-                }
-
-            },
-            700
-        );
-
-    }
-
-
-    catch (error) {
-
-        console.error(
-            "Login Error:",
-            error
-        );
-
-
-        showMessage(
-            "❌ Login failed. Please try again.",
-            "error"
-        );
-
-    }
-
-
-    finally {
-
-        button.disabled = false;
-
-        button.innerText =
-            "Login";
-
-    }
-
-}
-
-</script>
-
+    </script>
 </body>
-
 </html>
